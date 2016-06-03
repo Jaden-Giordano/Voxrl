@@ -6,7 +6,7 @@ public class Network_PlayerSetup : NetworkBehaviour {
 
 	void Start () {
 	    if (isLocalPlayer) {
-            GameObject.Find("Main Camera").SetActive(false);
+            GameObject.Find("Scene Camera").SetActive(false);
             this.GetComponent<CharacterController>().enabled = true;
             this.GetComponent<PlayerController>().enabled = true;
             this.transform.FindChild("Camera").gameObject.SetActive(true);

@@ -42,7 +42,6 @@ public class PlayerController : MonoBehaviour {
         CharacterController controller = GetComponent<CharacterController>();
 
         if (controller.isGrounded) {
-            Debug.Log("blah");
             float rot = this.focus.transform.rotation.eulerAngles.y;
             Vector3 forward = new Vector3(Mathf.Sin(Mathf.Deg2Rad * rot), 0, Mathf.Cos(Mathf.Deg2Rad * rot)) * Input.GetAxis("Vertical");
             Vector3 right = -new Vector3(Mathf.Sin(Mathf.Deg2Rad * (rot-90)), 0, Mathf.Cos(Mathf.Deg2Rad * (rot-90))) * Input.GetAxis("Horizontal");
