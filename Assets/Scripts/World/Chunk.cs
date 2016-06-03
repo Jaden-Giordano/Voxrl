@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -71,20 +72,28 @@ public class Chunk : MonoBehaviour {
     }
 
 	public Voxel GetVoxel(Vector3i pos) {
-        if (InRange(pos))
-            return cVoxels.Get(pos);
-		return world.GetVoxel (pos);
+        //Logger.Instance.AddLog(pos.ToString());
+        bool inrange = InRange(pos);
+        //Logger.Instance.AddLog(inrange.ToString());
+        if (!inrange)
+            return world.GetVoxel(pos);
+        return cVoxels.Get(pos);
 	}
 
     private bool InRange(Vector3i pos)
     {
-        /*if (pos.x < cPosition.x || pos.x >= cPosition.x + Chunk.cSize)
-            return false;
+        bool test = true;
+        //string s = pos.ToString() + ":" + (cPosition + Chunk.cSize).ToString();
+        //Logger.Instance.AddLog(s);
+        if (pos.x < cPosition.x || pos.x >= cPosition.x + Chunk.cSize)
+            test = false;
         if (pos.y < cPosition.y || pos.y >= cPosition.y + Chunk.cSize)
-            return false;
+            test = false;
         if (pos.z < cPosition.z || pos.z >= cPosition.z + Chunk.cSize)
-            return false;*/
-        return true;
+            test = false;
+        //string s1 = "InRange = " + test.ToString();
+        //Logger.Instance.AddLog(s1);
+        return test;
     }
 
 	void Render() {

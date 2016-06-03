@@ -16,6 +16,7 @@ public class BasicWorldGeneration : GeneratorBase {
 			}
 		}
 		chunk.cGenerated = true;
+        Logger.Instance.OutputLog();
 	}
 
 	private static int GetNoise(int x, int y, int z, float scale, int max) {

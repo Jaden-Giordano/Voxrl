@@ -45,6 +45,7 @@ public class World : MonoBehaviour {
     }
 
 	public Voxel GetVoxel(Vector3i pos) {
+        Logger.Instance.AddLog("FUCK YOU MICROSOFT!");
 		Chunk tempChunk = GetChunk (pos);
 		if (tempChunk != null)
 			return tempChunk.GetVoxel (pos);
