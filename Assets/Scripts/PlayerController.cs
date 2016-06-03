@@ -10,8 +10,7 @@ public class PlayerController : MonoBehaviour {
 
     private Vector3 moveDirection = Vector3.zero;
 
-    [SerializeField]
-    private Camera camera;
+    private new Transform camera;
     private Transform focus;
     private Transform offset;
     private Vector3 finalOffset;
@@ -22,11 +21,10 @@ public class PlayerController : MonoBehaviour {
     private Vector2 pan = Vector2.zero;
 
     [Range(0, 1)]
-    public float zoom = 0;
+    public float zoom = 1;
 
     void Start() {
-        if (camera == null)
-            camera = Camera.main;
+        camera = this.transform.FindChild("Camera");
         this.focus = this.transform.FindChild("Focus");
         this.offset = this.focus.FindChild("Offset");
         this.finalOffset = offset.localPosition;
@@ -44,6 +42,7 @@ public class PlayerController : MonoBehaviour {
         CharacterController controller = GetComponent<CharacterController>();
 
         if (controller.isGrounded) {
+            Debug.Log("blah");
             float rot = this.focus.transform.rotation.eulerAngles.y;
             Vector3 forward = new Vector3(Mathf.Sin(Mathf.Deg2Rad * rot), 0, Mathf.Cos(Mathf.Deg2Rad * rot)) * Input.GetAxis("Vertical");
             Vector3 right = -new Vector3(Mathf.Sin(Mathf.Deg2Rad * (rot-90)), 0, Mathf.Cos(Mathf.Deg2Rad * (rot-90))) * Input.GetAxis("Horizontal");
@@ -75,8 +74,8 @@ public class PlayerController : MonoBehaviour {
         Vector3 finalPos = new Vector3(0, finalOffset.y * (zoom * .8f), finalOffset.z * (zoom + .05f));
         offset.localPosition = finalPos;
 
-        camera.transform.position = offset.position;
-        camera.transform.LookAt(focus);
+        camera.position = offset.position;
+        camera.LookAt(focus);
     }
 
 }
