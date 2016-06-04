@@ -31,6 +31,16 @@ public class World : MonoBehaviour {
 		StartCoroutine (CreateChunk ());
 	}
 
+    //Keep this function here, It doesn't work in it's old position below RemoveVoxel
+    //No Idea Why (Fecking Microsoft Sabotage)
+    public Voxel GetVoxel(Vector3i pos)
+    {
+        Chunk tempChunk = GetChunk(pos);
+        if(tempChunk != null)
+            return tempChunk.GetVoxel(pos);
+        return null;
+    }
+
 	public void SetVoxel(Vector3i pos, Color32 color) {
 		Chunk tempChunk = GetChunk (pos);
 		if (tempChunk != null)
@@ -44,18 +54,10 @@ public class World : MonoBehaviour {
             tempChunk.RemoveVoxel(pos);
     }
 
-	public Voxel GetVoxel(Vector3i pos) {
-        Logger.Instance.AddLog("FUCK YOU MICROSOFT!");
-		Chunk tempChunk = GetChunk (pos);
-		if (tempChunk != null)
-			return tempChunk.GetVoxel (pos);
-		return null;
-	}
-
 	public Chunk GetChunk(Vector3i pos) {
-		pos.x = Mathf.FloorToInt (pos.x / Chunk.cSize) * Chunk.cSize;
-		pos.y = Mathf.FloorToInt (pos.y / Chunk.cSize) * Chunk.cSize;
-		pos.z = Mathf.FloorToInt (pos.z / Chunk.cSize) * Chunk.cSize;
+        pos.x = Mathf.FloorToInt (pos.x / (float)Chunk.cSize) * Chunk.cSize;
+        pos.y = Mathf.FloorToInt (pos.y / (float)Chunk.cSize) * Chunk.cSize;
+        pos.z = Mathf.FloorToInt (pos.z / (float)Chunk.cSize) * Chunk.cSize;
 
         return wChunks.Get(pos);
 	}

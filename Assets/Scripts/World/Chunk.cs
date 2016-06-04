@@ -25,7 +25,6 @@ public class Chunk : MonoBehaviour {
 	private RendererBase renderer;
 
 	void Awake() {
-        Debug.Log(Vector3i.zero.ToString());
         cVoxels = new Octree<Voxel>(cSize, new Vector3i(cPosition.x + cSize / 2, cPosition.y + cSize / 2, cPosition.z + cSize / 2), 8);
 
 		cFilter = gameObject.GetComponent<MeshFilter> ();
@@ -70,15 +69,21 @@ public class Chunk : MonoBehaviour {
             world.RemoveVoxel(pos);
         }
     }
-
-	public Voxel GetVoxel(Vector3i pos) {
-        //Logger.Instance.AddLog(pos.ToString());
-        bool inrange = InRange(pos);
-        //Logger.Instance.AddLog(inrange.ToString());
-        if (!inrange)
+    int i = 0;
+    public Voxel GetVoxel(Vector3i pos)
+    {
+        i++;
+        if (InRange(pos))
+        {
+            //Logger.Instance.AddLog(i + "Inrange");
+            return cVoxels.Get(pos);
+        }
+        else
+        {
+            //Logger.Instance.AddLog(i + "Outrange");
             return world.GetVoxel(pos);
-        return cVoxels.Get(pos);
-	}
+        }
+    }
 
     private bool InRange(Vector3i pos)
     {
