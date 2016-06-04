@@ -71,7 +71,27 @@ public class PlayerController : MonoBehaviour {
             zoom = 0;
 
         Vector3 finalPos = new Vector3(0, finalOffset.y * (zoom * .8f), finalOffset.z * (zoom + .05f));
-        offset.localPosition = finalPos;
+
+        float dist = finalPos.magnitude;
+
+        Vector3 dir = this.focus.TransformPoint(finalPos) - focus.position;
+        Ray r = new Ray(focus.position, dir);
+
+        Debug.DrawLine(focus.position, this.focus.TransformPoint(finalPos));
+
+        float closestDist = finalPos.magnitude;
+
+        RaycastHit[] hits = Physics.RaycastAll(r, dist);
+        if (hits.Length > 0) {
+            foreach (RaycastHit i in hits) {
+                if (i.transform != this.transform) {
+                    if (i.distance < closestDist)
+                        closestDist = i.distance;
+                }
+            }
+        }
+
+        offset.localPosition = Vector3.Lerp(Vector3.zero, finalPos, (closestDist / finalPos.magnitude)-0.05f);
 
         camera.position = offset.position;
         camera.LookAt(focus);
