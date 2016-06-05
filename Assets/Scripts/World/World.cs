@@ -1,41 +1,69 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using CielaSpike;
 
-public class World : MonoBehaviour {
+public class World : MonoBehaviour
+{
 
     public Octree<Chunk> wChunks;
 
     public int wSize;
     public int wMinSize = 256;
-    
-	public Vector3i cGenerationPos;
 
-	private Queue<Vector3i> cToGenerate = new Queue<Vector3i>();
+    public Vector3i cGenerationPos;
 
-	GeneratorBase cGenerator;
-	public bool cGenerate = true;
+    private Queue<Vector3i> cToGenerate = new Queue<Vector3i>();
 
-	public GameObject chunkPrefab;
+    GeneratorBase cGenerator;
+    public bool cGenerate = true;
 
-	void Awake() {
-        wChunks = new Octree<Chunk>(wSize, Vector3i.zero, wMinSize);
+    public GameObject chunkPrefab;
 
-		cGenerator = new BasicWorldGeneration ();
-	}
+    public Vector3 worldSize;
 
-	void FixedUpdate() {
-		if (cGenerate)
-			AddChunk (cGenerationPos);
+    void Awake()
+    {
+        wChunks = new Octree<Chunk>(wSize, Vector3.zero, wMinSize);
 
-		StartCoroutine (CreateChunk ());
-	}
+        cGenerator = new BasicWorldGeneration();
+    }
 
-	public void SetVoxel(Vector3i pos, Color32 color) {
-		Chunk tempChunk = GetChunk (pos);
-		if (tempChunk != null)
-			tempChunk.SetVoxel (pos, color);
-	}
+    void FixedUpdate()
+    {
+        if (cGenerate)
+        {
+            for (int x = -(int)worldSize.x; x < worldSize.x; x++) 
+            {
+                for (int y = -(int)worldSize.y; y < worldSize.y; y++)
+                {
+                    for (int z = -(int)worldSize.z; z < worldSize.z; z++)
+                    {
+                        AddChunk(new Vector3i(x, y, z));
+                    }
+                }
+            }
+        }
+
+        StartCoroutine(CreateChunk());
+    }
+
+    //Keep this function here, It doesn't work in it's old position below RemoveVoxel
+    //No Idea Why (Fecking Microsoft Sabotage)
+    public Voxel GetVoxel(Vector3i pos)
+    {
+        Chunk tempChunk = GetChunk(pos);
+        if (tempChunk != null)
+            return tempChunk.GetVoxel(pos);
+        return null;
+    }
+
+    public void SetVoxel(Vector3i pos, Voxel vox)
+    {
+        Chunk tempChunk = GetChunk(pos);
+        if (tempChunk != null)
+            tempChunk.SetVoxel(pos, vox);
+    }
 
     public void RemoveVoxel(Vector3i pos)
     {
@@ -44,52 +72,73 @@ public class World : MonoBehaviour {
             tempChunk.RemoveVoxel(pos);
     }
 
-	public Voxel GetVoxel(Vector3i pos) {
-        Logger.Instance.AddLog("FUCK YOU MICROSOFT!");
-		Chunk tempChunk = GetChunk (pos);
-		if (tempChunk != null)
-			return tempChunk.GetVoxel (pos);
-		return null;
-	}
-
-	public Chunk GetChunk(Vector3i pos) {
-		pos.x = Mathf.FloorToInt (pos.x / Chunk.cSize) * Chunk.cSize;
-		pos.y = Mathf.FloorToInt (pos.y / Chunk.cSize) * Chunk.cSize;
-		pos.z = Mathf.FloorToInt (pos.z / Chunk.cSize) * Chunk.cSize;
+    public Chunk GetChunk(Vector3i pos)
+    {
+        pos.x = Mathf.FloorToInt(pos.x / (float)Chunk.cSize) * Chunk.cSize;
+        pos.y = Mathf.FloorToInt(pos.y / (float)Chunk.cSize) * Chunk.cSize;
+        pos.z = Mathf.FloorToInt(pos.z / (float)Chunk.cSize) * Chunk.cSize;
 
         return wChunks.Get(pos);
-	}
+    }
 
-	public void AddChunk(Vector3i pos) {
-		cGenerate = false;
-		cToGenerate.Enqueue (pos);
-	}
+    public void AddChunk(Vector3i pos)
+    {
+        cGenerate = false;
+        Chunk tempChunk = GetChunk(pos);
+        if(tempChunk == null)
+            cToGenerate.Enqueue(pos);
+    }
 
-	public void DestroyChunk(Vector3i pos) {
-		wChunks.Remove(pos);
-	}
+    public void DestroyChunk(Vector3i pos)
+    {
+        pos *= Chunk.cSize;
+        Chunk tempChunk = GetChunk(pos);
+        if (tempChunk != null)
+        {
+            Destroy(tempChunk.gameObject);
+            wChunks.Remove(pos);
+        }
+    }
 
-	IEnumerator CreateChunk() {
-		Vector3i[] TempPositions = new Vector3i[cToGenerate.Count];
-		cToGenerate.CopyTo (TempPositions, 0);
-		cToGenerate.Clear ();
+    IEnumerator CreateChunk()
+    {
+        Task GenerationTask;
 
-		foreach (Vector3i pos in TempPositions) {
-            
-			if (wChunks.Get(pos) == null) {
-				Vector3i TempPos = pos*Chunk.cSize;
+        Vector3i[] TempPositions = new Vector3i[cToGenerate.Count];
+        cToGenerate.CopyTo(TempPositions, 0);
+        cToGenerate.Clear();
 
-				GameObject tempChunkObject = Instantiate (chunkPrefab) as GameObject;
-				tempChunkObject.transform.SetParent (this.transform);
-				tempChunkObject.name = TempPos.ToString ();
-				Chunk tempChunkScript = tempChunkObject.GetComponent<Chunk> ();
+        foreach (Vector3i pos in TempPositions)
+        {
 
-				tempChunkScript.world = this;
-				tempChunkScript.cPosition = TempPos;
-				cGenerator.Generate (this, tempChunkScript);
-				wChunks.Add (tempChunkScript, TempPos);
-			}
-		}
+            if (wChunks.Get(pos) == null)
+            {
+                Vector3i TempPos = pos * Chunk.cSize;
+
+                yield return Ninja.JumpToUnity;
+
+                GameObject tempChunkObject = Instantiate(chunkPrefab) as GameObject;
+                tempChunkObject.transform.SetParent(this.transform);
+                tempChunkObject.name = (TempPos/Chunk.cSize).ToString();
+                Chunk tempChunkScript = tempChunkObject.GetComponent<Chunk>();
+
+                yield return Ninja.JumpBack;
+
+                tempChunkScript.world = this;
+                tempChunkScript.cPosition = TempPos;
+                tempChunkScript.cVoxels = new Octree<Voxel>(Chunk.cSize, tempChunkScript.cPosition.ToVector3() + new Vector3(Chunk.cSize / 2, Chunk.cSize / 2, Chunk.cSize / 2), 16);
+
+                this.StartCoroutineAsync(GenerateChunk(tempChunkScript), out GenerationTask);
+                yield return StartCoroutine(GenerationTask.Wait());
+                wChunks.Add(tempChunkScript, TempPos);
+            }
+        }
         yield return new WaitForEndOfFrame();
-	}
+    }
+
+    IEnumerator GenerateChunk(Chunk chunk)
+    {
+        cGenerator.Generate(this, chunk);
+        yield break;
+    }
 }
