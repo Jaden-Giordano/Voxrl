@@ -86,7 +86,21 @@ public class LoadChunks : MonoBehaviour
         objPos.y = Mathf.FloorToInt(transform.position.y / Chunk.cSize);
         objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cSize);
 
-        for (int x = objPos.x - chunkLoadDistance; x < objPos.x + chunkLoadDistance; x ++) 
+        foreach(Vector3i Pos in chunkPositions)
+        {
+            Vector3i cPos = Pos + objPos;
+            for (int y = objPos.y - 2; y < objPos.y + 2; y++) 
+            {
+                if (!loadedChunks.Contains(cPos) && Vector3.Distance(transform.position, cPos.ToVector3()) < chunkLoadDistance * Chunk.cSize)
+                {
+                    loadedChunks.Add(cPos);
+                    world.AddChunk(cPos);
+                }
+            }
+        }
+
+
+        /*for (int x = objPos.x - chunkLoadDistance; x < objPos.x + chunkLoadDistance; x ++) 
         {
             for (int y = objPos.y - chunkLoadDistance; y < objPos.y + chunkLoadDistance; y++) 
             {
@@ -101,7 +115,7 @@ public class LoadChunks : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
         Logger.Instance.OutputLog();
     }
 
