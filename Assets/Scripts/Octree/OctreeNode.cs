@@ -32,7 +32,7 @@ public class OctreeNode<T>
         if (objects.ContainsKey(position))
         {
             if(!objects.TryGetValue(position, out tempVox))
-                Logger.Instance.AddLog(
+                Logger.Instance.Log(
                     objects.TryGetValue(position, out tempVox).ToString());
             objects.TryGetValue(position, out tempVox);
         }

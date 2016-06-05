@@ -95,7 +95,7 @@ public class LoadChunks : MonoBehaviour
                     //Logger.Instance.AddLog("Possible Chunk Pos: " + new Vector3i(x, y, z).ToString());
                     if(!loadedChunks.Contains(new Vector3i(x, y, z)) && Vector3.Distance(transform.position, new Vector3(x,y,z)) < chunkLoadDistance * Chunk.cSize)
                     {
-                        Logger.Instance.AddLog("Load Chunk Pos: " + new Vector3i(x, y, z).ToString());
+                        Logger.Instance.Log("Load Chunk Pos: " + new Vector3i(x, y, z).ToString());
                         loadedChunks.Add(new Vector3i(x, y, z));
                         world.AddChunk(new Vector3i(x, y, z));
                     }
