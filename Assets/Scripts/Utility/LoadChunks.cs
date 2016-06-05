@@ -77,7 +77,7 @@ public class LoadChunks : MonoBehaviour {
                 if (newChunk != null && (newChunk.cRendered || updateList.Contains(newChunkPosition)))
                     continue;
 
-                for (int y = 0; y < 4; y++)
+                for (int y = -4; y < 4; y++)
                 {
                     buildList.Add(new Vector3i(newChunkPosition.x, y * Chunk.cSize, newChunkPosition.z));
                 }
