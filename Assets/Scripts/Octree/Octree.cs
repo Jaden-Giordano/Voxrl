@@ -11,7 +11,7 @@ public class Octree<T> {
     readonly float InitialSize;
     readonly float MinSize;
 
-	public Octree(float InitialSize, Vector3i InitialCenter, float MinSize)
+	public Octree(float InitialSize, Vector3 InitialCenter, float MinSize)
     {
         if(MinSize>InitialSize)
         {
@@ -20,7 +20,7 @@ public class Octree<T> {
         Count = 0;
         this.InitialSize = InitialSize;
         this.MinSize = MinSize;
-        RootNode = new OctreeNode<T>(InitialSize, InitialCenter.ToVector3(), MinSize);
+        RootNode = new OctreeNode<T>(InitialSize, InitialCenter, MinSize);
     }
     
     public T Get(Vector3i position)

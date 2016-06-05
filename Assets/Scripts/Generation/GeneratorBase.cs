@@ -9,9 +9,17 @@ public class GeneratorBase {
 	public void Generate(World world, Chunk chunk) {
 		this.world = world;
 		this.chunk = chunk;
-		GenerateChunk ();
-	}
 
-	public virtual void GenerateChunk() {
+        for (int x = chunk.cPosition.x; x < chunk.cPosition.x + Chunk.cSize; x++)
+        {
+            for (int z = chunk.cPosition.z; z < chunk.cPosition.z + Chunk.cSize; z++)
+            {
+                GenerateColumn(x,z);
+            }
+        }
+        chunk.cGenerated = true;
+    }
+
+	public virtual void GenerateColumn(int x, int z) {
 	}
 }
