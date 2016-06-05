@@ -55,30 +55,12 @@ public class Chunk : MonoBehaviour
         }
         if (!cRendered)
             StartCoroutine(Render());
-
-        if (testVoxel)
-        {
-            testVoxel = false;
-            if (cVoxels.Get(new Vector3i(0, 0, 32)) != null)
-            {
-                Debug.Log("Totes Voxel at 0,0,32");
-            }else
-            {
-                Debug.Log("No Voxel At 0,0,32: Placing One");
-                cVoxels.Add(new Voxel(), new Vector3i(0, 0, 32));
-            }
-        }
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
     {
         if (InRange(pos))
         {
-            if (vox == null)
-            {
-                Logger.Instance.AddLog("Nullllllllll");
-                vox = new Voxel();
-            }
 
             cVoxels.Add(vox, pos);
             this.cDirty = true;
@@ -101,8 +83,6 @@ public class Chunk : MonoBehaviour
             world.RemoveVoxel(pos);
         }
     }
-
-    public bool t = false;
 
     public Voxel GetVoxel(Vector3i pos)
     {

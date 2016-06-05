@@ -10,10 +10,7 @@ public class BasicWorldRenderer : RendererBase
     private MeshData meshData;
 
     private HashSet<Vector3i> voxels;
-
-    List<Vector3> vertices = new List<Vector3>();
-    List<int> triangles = new List<int>();
-    List<Color32> colors = new List<Color32>();
+    
 
 
     public void Initialize()
@@ -62,7 +59,7 @@ public class BasicWorldRenderer : RendererBase
 
     public Mesh ToMesh(Mesh mesh)
     {
-        if (vertices.Count == 0)
+        if (meshData.vertices.Count == 0)
         {
             GameObject.Destroy(mesh);
             return null;
@@ -71,9 +68,9 @@ public class BasicWorldRenderer : RendererBase
         if (mesh == null)
             mesh = new Mesh();
 
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.colors32 = colors.ToArray();
+        mesh.vertices = meshData.VertexArray();
+        mesh.triangles = meshData.TriangleArray();
+        mesh.colors32 = meshData.ColorArray();
 
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
@@ -85,24 +82,21 @@ public class BasicWorldRenderer : RendererBase
 
     private void DrawFace(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Voxel voxel)
     {
-        int index = vertices.Count;
-            vertices.Add(v1);
-            vertices.Add(v2);
-            vertices.Add(v3);
-            vertices.Add(v4);
+        int index = meshData.vertices.Count;
+        meshData.AddVertex(v1);
+        meshData.AddVertex(v2);
+        meshData.AddVertex(v3);
+        meshData.AddVertex(v4);
 
-            triangles.Add(index);
-            triangles.Add(index + 1);
-            triangles.Add(index + 2);
+        meshData.AddTriangle(index);
+        meshData.AddTriangle(index + 1);
+        meshData.AddTriangle(index + 2);
 
-            triangles.Add(index);
-            triangles.Add(index + 2);
-            triangles.Add(index + 3);
+        meshData.AddTriangle(index);
+        meshData.AddTriangle(index + 2);
+        meshData.AddTriangle(index + 3);
 
-            colors.Add(voxel.vColor);
-            colors.Add(voxel.vColor);
-            colors.Add(voxel.vColor);
-            colors.Add(voxel.vColor);
+        meshData.AddColor(voxel.vColor);
     }
 
     private bool MustFaceBeVisible(int x, int y, int z)
@@ -114,7 +108,8 @@ public class BasicWorldRenderer : RendererBase
             if (chunk.GetVoxel(pos).vColor.a == 1)
             {
                 return true;
-            }else
+            }
+            else
             {
                 return false;
             }

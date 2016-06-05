@@ -9,7 +9,7 @@ public class MeshData {
     public Dictionary<Vector3, int> colVertices = new Dictionary<Vector3, int>();
     //Key Value
     public Dictionary<int, int> triangles = new Dictionary<int, int>();
-    public Dictionary<int, Vector2> uvs = new Dictionary<int, Vector2>();
+    public Dictionary<int, Color32> colors = new Dictionary<int, Color32>();
     public Dictionary<int, int> colTriangles = new Dictionary<int, int>();
 
     public bool useRenderDataForCol = false;
@@ -20,7 +20,7 @@ public class MeshData {
     {
         vertices.Clear();
         triangles.Clear();
-        uvs.Clear();
+        colors.Clear();
         colVertices.Clear();
         colTriangles.Clear();
     }
@@ -45,9 +45,12 @@ public class MeshData {
         }
     }
 
-    public void AddUV(Vector2 uv)
+    public void AddColor(Color32 color)
     {
-        uvs.Add(uvs.Count, uv);
+        colors.Add(colors.Count, color);
+        colors.Add(colors.Count, color);
+        colors.Add(colors.Count, color);
+        colors.Add(colors.Count, color);
     }
 
     public Vector3[] VertexArray()
@@ -74,11 +77,11 @@ public class MeshData {
         return tempArray;
     }
 
-    public Vector2[] UVArray()
+    public Color32[] ColorArray()
     {
-        Vector2[] tempArray = new Vector2[uvs.Count];
+        Color32[] tempArray = new Color32[colors.Count];
         int i = 0;
-        foreach (Vector2 value in uvs.Values)
+        foreach (Color32 value in colors.Values)
         {
             tempArray[i] = value;
             i++;
