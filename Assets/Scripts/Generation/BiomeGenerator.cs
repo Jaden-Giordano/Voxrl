@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using SimplexNoise;
 
-public class BasicWorldGeneration : GeneratorBase
+public class BiomeGenerator : GeneratorBase
 {
     private float Frequency = 0.008f;
     private int Max = 32;

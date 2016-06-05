@@ -54,7 +54,7 @@ public class Chunk : MonoBehaviour
             cRendered = false;
         }
         if (!cRendered)
-            StartCoroutine(Render());
+            Runder();
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
@@ -103,6 +103,18 @@ public class Chunk : MonoBehaviour
         if (pos.z < cPosition.z || pos.z >= cPosition.z + Chunk.cSize)
             return false;
         return true;
+    }
+    void Runder()
+    {
+        if (cGenerated)
+        {
+            cRendered = true;
+            renderer.Render(world, this);
+            Mesh tempMesh = new Mesh();
+            tempMesh = renderer.ToMesh(tempMesh);
+            cFilter.sharedMesh = tempMesh;
+            cColl.sharedMesh = tempMesh;
+        }
     }
 
     IEnumerator Render()

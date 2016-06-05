@@ -10,8 +10,6 @@ public class BasicWorldRenderer : RendererBase
     private MeshData meshData;
 
     private HashSet<Vector3i> voxels;
-    
-
 
     public void Initialize()
     {
@@ -74,8 +72,6 @@ public class BasicWorldRenderer : RendererBase
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
-
-        Logger.Instance.OutputLog();
 
         return mesh;
     }

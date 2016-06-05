@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using CielaSpike;
 
 public class World : MonoBehaviour
 {
@@ -83,16 +84,26 @@ public class World : MonoBehaviour
     public void AddChunk(Vector3i pos)
     {
         cGenerate = false;
-        cToGenerate.Enqueue(pos);
+        Chunk tempChunk = GetChunk(pos);
+        if(tempChunk == null)
+            cToGenerate.Enqueue(pos);
     }
 
     public void DestroyChunk(Vector3i pos)
     {
-        wChunks.Remove(pos);
+        pos *= Chunk.cSize;
+        Chunk tempChunk = GetChunk(pos);
+        if (tempChunk != null)
+        {
+            Destroy(tempChunk.gameObject);
+            wChunks.Remove(pos);
+        }
     }
 
     IEnumerator CreateChunk()
     {
+        Task GenerationTask;
+
         Vector3i[] TempPositions = new Vector3i[cToGenerate.Count];
         cToGenerate.CopyTo(TempPositions, 0);
         cToGenerate.Clear();
@@ -104,19 +115,30 @@ public class World : MonoBehaviour
             {
                 Vector3i TempPos = pos * Chunk.cSize;
 
+                yield return Ninja.JumpToUnity;
+
                 GameObject tempChunkObject = Instantiate(chunkPrefab) as GameObject;
                 tempChunkObject.transform.SetParent(this.transform);
-                tempChunkObject.name = TempPos.ToString();
+                tempChunkObject.name = (TempPos/Chunk.cSize).ToString();
                 Chunk tempChunkScript = tempChunkObject.GetComponent<Chunk>();
+
+                yield return Ninja.JumpBack;
 
                 tempChunkScript.world = this;
                 tempChunkScript.cPosition = TempPos;
                 tempChunkScript.cVoxels = new Octree<Voxel>(Chunk.cSize, tempChunkScript.cPosition.ToVector3() + new Vector3(Chunk.cSize / 2, Chunk.cSize / 2, Chunk.cSize / 2), 16);
 
-                cGenerator.Generate(this, tempChunkScript);
+                this.StartCoroutineAsync(GenerateChunk(tempChunkScript), out GenerationTask);
+                yield return StartCoroutine(GenerationTask.Wait());
                 wChunks.Add(tempChunkScript, TempPos);
             }
         }
         yield return new WaitForEndOfFrame();
+    }
+
+    IEnumerator GenerateChunk(Chunk chunk)
+    {
+        cGenerator.Generate(this, chunk);
+        yield break;
     }
 }

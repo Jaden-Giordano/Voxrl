@@ -2,12 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LoadChunks : MonoBehaviour {
+public class LoadChunks : MonoBehaviour
+{
 
     public World world;
-
-    List<Vector3i> updateList = new List<Vector3i>();
-    List<Vector3i> buildList = new List<Vector3i>();
 
     static Vector3i[] chunkPositions = {   new Vector3i( 0, 0,  0), new Vector3i(-1, 0,  0), new Vector3i( 0, 0, -1), new Vector3i( 0, 0,  1), new Vector3i( 1, 0,  0),
                              new Vector3i(-1, 0, -1), new Vector3i(-1, 0,  1), new Vector3i( 1, 0, -1), new Vector3i( 1, 0,  1), new Vector3i(-2, 0,  0),
@@ -49,106 +47,62 @@ public class LoadChunks : MonoBehaviour {
                              new Vector3i(-6, 0, -5), new Vector3i(-6, 0,  5), new Vector3i(-5, 0, -6), new Vector3i(-5, 0,  6), new Vector3i( 5, 0, -6),
                              new Vector3i( 5, 0,  6), new Vector3i( 6, 0, -5), new Vector3i( 6, 0,  5) };
 
-    int timer = 0;
 
-    void Update()
+    public HashSet<Vector3i> loadedChunks = new HashSet<Vector3i>();
+    public HashSet<Vector3i> cToDelete;
+
+    public int chunkLoadDistance = 2;
+
+    private void Update()
     {
         DeleteChunks();
-        FindChunksToLoad();
-        LoadAndRenderChunks();
+        LChunks();
     }
 
-    void FindChunksToLoad()
+    public void DeleteChunks()
     {
-        Vector3i objectPos = new Vector3i(
-            Mathf.FloorToInt(transform.position.x / Chunk.cSize) * Chunk.cSize,
-            Mathf.FloorToInt(transform.position.y / Chunk.cSize) * Chunk.cSize,
-            Mathf.FloorToInt(transform.position.z / Chunk.cSize) * Chunk.cSize
-            );
+        cToDelete = new HashSet<Vector3i>();
 
-        if(buildList.Count == 0)
+        foreach (Vector3i cPos in loadedChunks)
         {
-            for (int i = 0; i < chunkPositions.Length; i++)
+            if (Vector3.Distance(transform.position, cPos.ToVector3()) > chunkLoadDistance * Chunk.cSize)
             {
-                Vector3i newChunkPosition = new Vector3i(chunkPositions[i].x * Chunk.cSize + objectPos.x, 0, chunkPositions[i].z * Chunk.cSize + objectPos.z);
-
-                Chunk newChunk = world.GetChunk(newChunkPosition);
-
-                if (newChunk != null && (newChunk.cRendered || updateList.Contains(newChunkPosition)))
-                    continue;
-
-                for (int y = -4; y < 4; y++)
-                {
-                    buildList.Add(new Vector3i(newChunkPosition.x, y * Chunk.cSize, newChunkPosition.z));
-                }
-                return;
-            }
-        }
-    }
-
-    void LoadAndRenderChunks()
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            if (buildList.Count != 0)
-            {
-                BuildChunk(buildList[0]);
-                buildList.RemoveAt(0);
+                //Logger.Instance.AddLog("Chunk Distance: " + Vector3.Distance(transform.position, cPos.ToVector3()).ToString());
+                cToDelete.Add(cPos);
             }
         }
 
-        for (int i = 0; i < updateList.Count; i++)
+        foreach(Vector3i cPos in cToDelete)
         {
-            Chunk chunk = world.GetChunk(updateList[i]);
-            if (chunk != null)
-                chunk.cDirty = true;
-            updateList.RemoveAt(i);
+            loadedChunks.Remove(cPos);
+            world.DestroyChunk(cPos);
         }
     }
 
-    void BuildChunk(Vector3i pos)
+    public void LChunks()
     {
-        for (int y = pos.y - Chunk.cSize; y <= pos.y + Chunk.cSize; y+= Chunk.cSize)
-        {
-            if (y > 64 || y < -64)
-                continue;
+        Vector3i objPos = new Vector3i();
+        objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cSize);
+        objPos.y = Mathf.FloorToInt(transform.position.y / Chunk.cSize);
+        objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cSize);
 
-            for (int x = pos.x - Chunk.cSize; x <= pos.x + Chunk.cSize; x += Chunk.cSize)
+        for (int x = objPos.x - chunkLoadDistance; x < objPos.x + chunkLoadDistance; x ++) 
+        {
+            for (int y = objPos.y - chunkLoadDistance; y < objPos.y + chunkLoadDistance; y++) 
             {
-                for (int z = pos.z - Chunk.cSize; z <= pos.z + Chunk.cSize; z += Chunk.cSize)
+                for (int z = objPos.z - chunkLoadDistance; z < objPos.z + chunkLoadDistance; z++)
                 {
-                    if (x > 128 || x < -128 || z > 128 || z < -128)
-                        break;
-                    if (world.GetChunk(new Vector3i(x, y, z)) == null)
+                    //Logger.Instance.AddLog("Possible Chunk Pos: " + new Vector3i(x, y, z).ToString());
+                    if(!loadedChunks.Contains(new Vector3i(x, y, z)) && Vector3.Distance(transform.position, new Vector3(x,y,z)) < chunkLoadDistance * Chunk.cSize)
+                    {
+                        Logger.Instance.AddLog("Load Chunk Pos: " + new Vector3i(x, y, z).ToString());
+                        loadedChunks.Add(new Vector3i(x, y, z));
                         world.AddChunk(new Vector3i(x, y, z));
+                    }
                 }
             }
         }
-        updateList.Add(pos);
+        Logger.Instance.OutputLog();
     }
 
-    void DeleteChunks()
-    {
-
-        if (timer == 10)
-        {
-            var chunksToDelete = new List<Vector3i>();
-            foreach (Vector3i chunk in world.wChunks.GetPositions())
-            {
-                float distance = Vector3.Distance(
-                    new Vector3(chunk.x, 0, chunk.z),
-                    new Vector3(transform.position.x, 0, transform.position.z));
-
-                if (distance > 256)
-                    chunksToDelete.Add(chunk);
-            }
-
-            foreach (var chunk in chunksToDelete)
-                world.DestroyChunk(chunk);
-
-            timer = 0;
-        }
-
-        timer++;
-    }
 }
