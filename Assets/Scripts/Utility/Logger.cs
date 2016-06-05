@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
-<<<<<<< HEAD
-=======
 using System.Collections;
 using System;
->>>>>>> refs/remotes/origin/Logger
 
 public class Logger : MonoBehaviour {
 
@@ -19,16 +16,13 @@ public class Logger : MonoBehaviour {
 
 	void Start () {
         _Instance = this;
-<<<<<<< HEAD
-	}
+
+        StartCoroutine(OutputLogs());
+    }
 
     public void AddLog(string msg) {
         logs.Add(msg);
     }
-
-=======
-        StartCoroutine(OutputLogs());
-	}
 
     public void Log(string msg) {
         logs.Add(msg);
@@ -39,7 +33,6 @@ public class Logger : MonoBehaviour {
     }
 
     [Obsolete("Use Add Log, outputting is automatic.")]
->>>>>>> refs/remotes/origin/Logger
     public void OutputLog() {
         List<StringBuilder> bs = new List<StringBuilder>();
 
@@ -57,8 +50,6 @@ public class Logger : MonoBehaviour {
         }
     }
 
-<<<<<<< HEAD
-=======
     public string GetTopLog() {
         if (logs.Count == 0)
             return null;
@@ -75,6 +66,4 @@ public class Logger : MonoBehaviour {
             yield return null;
         }
     }
-
->>>>>>> refs/remotes/origin/Logger
 }
