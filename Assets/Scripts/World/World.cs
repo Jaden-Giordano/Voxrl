@@ -21,7 +21,7 @@ public class World : MonoBehaviour
 
     void Awake()
     {
-        wChunks = new Octree<Chunk>(wSize, Vector3i.zero, wMinSize);
+        wChunks = new Octree<Chunk>(wSize, Vector3.zero, wMinSize);
 
         cGenerator = new BasicWorldGeneration();
     }
@@ -30,8 +30,19 @@ public class World : MonoBehaviour
     {
         if (cGenerate)
         {
-            AddChunk(cGenerationPos);
-            //AddChunk(new Vector3i(0, 0, 1));
+            /*AddChunk(new Vector3i(0, 0, 0));
+            AddChunk(new Vector3i(1, 0, 0));
+            AddChunk(new Vector3i(2, 0, 0));
+            AddChunk(new Vector3i(3, 0, 0));
+            AddChunk(new Vector3i(4, 0, 0));
+            AddChunk(new Vector3i(5, 0, 0));
+            AddChunk(new Vector3i(6, 0, 0));
+            AddChunk(new Vector3i(7, 0, 0));
+            AddChunk(new Vector3i(8, 0, 0));
+            AddChunk(new Vector3i(9, 0, 0));
+            AddChunk(new Vector3i(10, 0, 0));
+            AddChunk(new Vector3i(11, 0, 0));
+            AddChunk(new Vector3i(12, 0, 0));*/
         }
 
         StartCoroutine(CreateChunk());
@@ -47,11 +58,11 @@ public class World : MonoBehaviour
         return null;
     }
 
-    public void SetVoxel(Vector3i pos, Color32 color)
+    public void SetVoxel(Vector3i pos, Voxel vox)
     {
         Chunk tempChunk = GetChunk(pos);
         if (tempChunk != null)
-            tempChunk.SetVoxel(pos, color);
+            tempChunk.SetVoxel(pos, vox);
     }
 
     public void RemoveVoxel(Vector3i pos)
@@ -101,6 +112,8 @@ public class World : MonoBehaviour
 
                 tempChunkScript.world = this;
                 tempChunkScript.cPosition = TempPos;
+                tempChunkScript.cVoxels = new Octree<Voxel>(Chunk.cSize, tempChunkScript.cPosition.ToVector3() + new Vector3(Chunk.cSize / 2, Chunk.cSize / 2, Chunk.cSize / 2), 16);
+
                 cGenerator.Generate(this, tempChunkScript);
                 wChunks.Add(tempChunkScript, TempPos);
             }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using CielaSpike;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -25,14 +26,23 @@ public class Chunk : MonoBehaviour
 
     private RendererBase renderer;
 
+    public bool testVoxel = false;
+
+    public bool oBounds = false;
+    public bool oPoints = false;
+
     void Awake()
     {
-        cVoxels = new Octree<Voxel>(cSize, new Vector3i(cPosition.x + cSize / 2, cPosition.y + cSize / 2, cPosition.z + cSize / 2), 8);
+        Logger.Instance.AddLog(cPosition.ToString());
 
         cFilter = gameObject.GetComponent<MeshFilter>();
         cColl = gameObject.GetComponent<MeshCollider>();
 
-        renderer = new RendererBase();
+        renderer = new BasicWorldRenderer();
+    }
+
+    void Start()
+    {
         renderer.Initialize();
     }
 
@@ -44,21 +54,38 @@ public class Chunk : MonoBehaviour
             cRendered = false;
         }
         if (!cRendered)
-            Render();
+            StartCoroutine(Render());
+
+        if (testVoxel)
+        {
+            testVoxel = false;
+            if (cVoxels.Get(new Vector3i(0, 0, 32)) != null)
+            {
+                Debug.Log("Totes Voxel at 0,0,32");
+            }else
+            {
+                Debug.Log("No Voxel At 0,0,32: Placing One");
+                cVoxels.Add(new Voxel(), new Vector3i(0, 0, 32));
+            }
+        }
     }
 
-    public void SetVoxel(Vector3i pos, Color32 color)
+    public void SetVoxel(Vector3i pos, Voxel vox)
     {
         if (InRange(pos))
         {
-            Voxel tempVoxel = new Voxel();
-            tempVoxel.SetColor(color);
-            cVoxels.Add(tempVoxel, pos);
+            if (vox == null)
+            {
+                Logger.Instance.AddLog("Nullllllllll");
+                vox = new Voxel();
+            }
+
+            cVoxels.Add(vox, pos);
             this.cDirty = true;
         }
         else
         {
-            world.SetVoxel(pos, color);
+            world.SetVoxel(pos, vox);
         }
     }
 
@@ -75,10 +102,15 @@ public class Chunk : MonoBehaviour
         }
     }
 
+    public bool t = false;
+
     public Voxel GetVoxel(Vector3i pos)
     {
         if (InRange(pos))
+        {
+            //Logger.Instance.AddLog(cVoxels.Get(pos).ToString());
             return cVoxels.Get(pos);
+        }
         return world.GetVoxel(pos);
     }
 
@@ -93,16 +125,33 @@ public class Chunk : MonoBehaviour
         return true;
     }
 
-    void Render()
+    IEnumerator Render()
     {
+        Task task;
         if (cGenerated)
         {
             cRendered = true;
-            renderer.Render(world, this);
+            this.StartCoroutineAsync(ProcessMesh(), out task);
+            yield return StartCoroutine(task.Wait());
             Mesh tempMesh = new Mesh();
             tempMesh = renderer.ToMesh(tempMesh);
             cFilter.sharedMesh = tempMesh;
             cColl.sharedMesh = tempMesh;
         }
+        yield break;
+    }
+
+    IEnumerator ProcessMesh()
+    {
+        renderer.Render(world, this);
+        yield break;
+    }
+
+    public void OnDrawGizmos()
+    {
+        if (oBounds)
+            cVoxels.DrawAllBounds();
+        if (oPoints)
+            cVoxels.DrawAllPoints();
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 public class Logger : MonoBehaviour {
-
+    
     private static Logger _Instance;
 
     public static Logger Instance {

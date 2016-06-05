@@ -30,7 +30,13 @@ public class OctreeNode<T>
     {
         T tempVox = default(T);
         if (objects.ContainsKey(position))
+        {
+            if(!objects.TryGetValue(position, out tempVox))
+                Logger.Instance.AddLog(
+                    objects.TryGetValue(position, out tempVox).ToString());
             objects.TryGetValue(position, out tempVox);
+        }
+
 
         if (tempVox == null && Children != null)
         {
@@ -307,7 +313,7 @@ public class OctreeNode<T>
         Gizmos.color = new Color(TintVal, 0, 1.0f - TintVal);
 
         foreach (Vector3i position in objects.Keys)
-            Gizmos.DrawCube(position.ToVector3(), new Vector3(.75f, .75f, .75f));
+            Gizmos.DrawCube(position.ToVector3() + new Vector3(Voxel.vSize/2, Voxel.vSize / 2, Voxel.vSize / 2), new Vector3(.75f, .75f, .75f));
 
         if (Children != null)
         {
