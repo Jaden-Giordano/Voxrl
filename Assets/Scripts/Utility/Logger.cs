@@ -32,7 +32,7 @@ public class Logger : MonoBehaviour {
         logs.Add(msg.ToString());
     }
 
-    [Obsolete("Use Add Log, outputting is automatic.")]
+    [Obsolete("Use Log, outputting is automatic.")]
     public void OutputLog() {
         List<StringBuilder> bs = new List<StringBuilder>();
 

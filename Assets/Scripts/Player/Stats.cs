@@ -4,8 +4,10 @@ using System.Collections;
 public class Stats : MonoBehaviour {
 
     public float health = 100;
+    public float maxHealth = 100;
     public float mana = 40;
     public float speed = 5;
+    public float damage = 20;
 
     public int experience = 1;
 
@@ -23,21 +25,20 @@ public class Stats : MonoBehaviour {
 
     private int lastLevel = 0;
 
-	void Start () {
-        this.health = 100;
+	protected virtual void Start () {
 	}
 
-	void FixedUpdate () {
+	protected virtual void FixedUpdate () {
 	    if (this.Level > lastLevel) {
             lastLevel = this.Level;
             this.skillPoints += 2;
         }
 	}
 
-    public void ApplyEffect(Effect e) {
-        this.health += e.StatsEffected.health;
-        this.mana += e.StatsEffected.mana;
-        this.speed += e.StatsEffected.speed;
+    public virtual void ApplyEffect(Effect e) {
+        this.health += e.statsEffected.health;
+        this.mana += e.statsEffected.mana;
+        this.speed += e.statsEffected.speed;
 
         if (this.health <= 0) {
             e.owner.AwardKill(AwardExp);

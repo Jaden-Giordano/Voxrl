@@ -9,12 +9,12 @@ public class BattleSystem : MonoBehaviour {
 
     public List<Status> currentStatus = new List<Status>();
 
-    void Start() {
+    protected virtual void Start() {
         abilities = new Ability[6];
         stats = GetComponent<Stats>();
     }
     
-    void Update() {
+    protected virtual void Update() {
         List<Status> rmvQueue = new List<Status>();
         foreach (Status i in currentStatus) {
             i.timeLeft -= Time.deltaTime;
@@ -24,20 +24,25 @@ public class BattleSystem : MonoBehaviour {
         foreach (Status i in rmvQueue) {
             currentStatus.Remove(i);
         }
+
+        foreach (Ability a in abilities) {
+            a.Update();
+        }
     }
 
-    protected void UseAbility(int index) {
+    protected virtual void UseAbility(int index) {
         Ability a = abilities[index];
         if (a.available) {
-            // play attack animation
-            if (a.selfEffect)
-                this.Affect(a.GenerateEffects());
+            // play ability animation
+            Effect[] efs = a.GenerateEffects();
+            if (a.selfAfflict)
+                this.Effected(efs);
             else {
-                GameObject[] hits = a.GetObjectsAffected(this.transform.position);
+                GameObject[] hits = a.GetEffectedObjects(this.transform);
                 foreach (GameObject i in hits) {
                     if (i.tag == "Mob") {
                         BattleSystem mob = i.GetComponent<BattleSystem>();
-                        mob.Affect(a.GenerateEffects());
+                        mob.Effected(efs);
                     }
                 }
             }
@@ -45,7 +50,7 @@ public class BattleSystem : MonoBehaviour {
         }
     }
 
-    public void Affect(Effect[] effects) {
+    public virtual void Effected(Effect[] effects) {
         foreach (Effect i in effects) {
             if (i.statsBased)
                 stats.ApplyEffect(i);
@@ -58,20 +63,20 @@ public class BattleSystem : MonoBehaviour {
         }
     }
 
-    public void InvokeStatus(Status s) {
+    public virtual void InvokeStatus(Status s) {
         currentStatus.Add(s);
     }
 
-    public void InvokeStatus(List<Status> s) {
+    public virtual void InvokeStatus(List<Status> s) {
         foreach (Status i in s)
             InvokeStatus(i);
     }
 
-    public void InvokeStatus(StatusType type, float percentage, float time) {
+    public virtual void InvokeStatus(StatusType type, float percentage, float time) {
         InvokeStatus(new Status(type, percentage, time));
     }
 
-    public void AwardKill(int exp) {
+    public virtual void AwardKill(int exp) {
         this.stats.experience += exp;
     }
 
