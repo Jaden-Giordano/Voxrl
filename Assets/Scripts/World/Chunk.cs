@@ -31,6 +31,8 @@ public class Chunk : MonoBehaviour
     public bool oBounds = false;
     public bool oPoints = false;
 
+    public Chunk[] SurroundingChunks = new Chunk[6];
+
     void Awake()
     {
         Logger.Instance.Log(cPosition.ToString());
@@ -54,7 +56,7 @@ public class Chunk : MonoBehaviour
             cRendered = false;
         }
         if (!cRendered)
-            Runder();
+            StartCoroutine(Render());
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)

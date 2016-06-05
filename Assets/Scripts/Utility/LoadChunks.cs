@@ -89,12 +89,12 @@ public class LoadChunks : MonoBehaviour
         foreach(Vector3i Pos in chunkPositions)
         {
             Vector3i cPos = Pos + objPos;
-            for (int y = objPos.y - 2; y < objPos.y + 2; y++) 
+            for (int y = -6; y < 6; y++) 
             {
-                if (!loadedChunks.Contains(cPos) && Vector3.Distance(transform.position, cPos.ToVector3()) < chunkLoadDistance * Chunk.cSize)
+                if (!loadedChunks.Contains(cPos) && Mathf.Abs(Mathf.Pow(transform.position.x + transform.position.z, 2) - Mathf.Pow(cPos.x + cPos.z, 2)) < chunkLoadDistance * Chunk.cSize)
                 {
-                    loadedChunks.Add(cPos);
-                    world.AddChunk(cPos);
+                    loadedChunks.Add(new Vector3i(cPos.x, y, cPos.z));
+                    world.AddChunk(new Vector3i(cPos.x, y, cPos.z));
                 }
             }
         }

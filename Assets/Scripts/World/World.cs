@@ -6,6 +6,8 @@ using CielaSpike;
 public class World : MonoBehaviour
 {
 
+    public int seed = 0;
+
     public Octree<Chunk> wChunks;
 
     public int wSize;
@@ -27,6 +29,9 @@ public class World : MonoBehaviour
         wChunks = new Octree<Chunk>(wSize, Vector3.zero, wMinSize);
 
         cGenerator = new BasicWorldGeneration();
+
+        if (seed == 0)
+            seed = (int)System.DateTime.Now.Ticks;
     }
 
     void FixedUpdate()

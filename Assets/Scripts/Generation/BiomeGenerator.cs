@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using SimplexNoise;
 
 public class BiomeGenerator : GeneratorBase
 {
@@ -11,7 +10,7 @@ public class BiomeGenerator : GeneratorBase
     public override void GenerateColumn(int x, int z)
     {
         int height = 0;
-        height += GetNoise(x, 0, z, Frequency, Max);
+        //height += GetNoise(x, 0, z, Frequency, Max);
 
         for (int i = 0, y = height - 3; y < height; y++, i++)
         {
@@ -23,10 +22,5 @@ public class BiomeGenerator : GeneratorBase
             if (chunk.GetVoxel(new Vector3i(x, y, z)) == null)
                 chunk.SetVoxel(new Vector3i(x, y, z), tVoxel);
         }
-    }
-
-    private static int GetNoise(int x, int y, int z, float scale, int max)
-    {
-        return Mathf.FloorToInt((Noise.Generate(x * scale, y * scale, z * scale) + 1f) * (max / 2f));
     }
 }
