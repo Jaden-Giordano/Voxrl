@@ -19,6 +19,8 @@ public class World : MonoBehaviour
 
     public GameObject chunkPrefab;
 
+    public Vector3 worldSize;
+
     void Awake()
     {
         wChunks = new Octree<Chunk>(wSize, Vector3.zero, wMinSize);
@@ -30,19 +32,16 @@ public class World : MonoBehaviour
     {
         if (cGenerate)
         {
-            /*AddChunk(new Vector3i(0, 0, 0));
-            AddChunk(new Vector3i(1, 0, 0));
-            AddChunk(new Vector3i(2, 0, 0));
-            AddChunk(new Vector3i(3, 0, 0));
-            AddChunk(new Vector3i(4, 0, 0));
-            AddChunk(new Vector3i(5, 0, 0));
-            AddChunk(new Vector3i(6, 0, 0));
-            AddChunk(new Vector3i(7, 0, 0));
-            AddChunk(new Vector3i(8, 0, 0));
-            AddChunk(new Vector3i(9, 0, 0));
-            AddChunk(new Vector3i(10, 0, 0));
-            AddChunk(new Vector3i(11, 0, 0));
-            AddChunk(new Vector3i(12, 0, 0));*/
+            for (int x = -(int)worldSize.x; x < worldSize.x; x++) 
+            {
+                for (int y = -(int)worldSize.y; y < worldSize.y; y++)
+                {
+                    for (int z = -(int)worldSize.z; z < worldSize.z; z++)
+                    {
+                        AddChunk(new Vector3i(x, y, z));
+                    }
+                }
+            }
         }
 
         StartCoroutine(CreateChunk());

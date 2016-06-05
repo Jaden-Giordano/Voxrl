@@ -14,16 +14,13 @@ public class BasicWorldGeneration : GeneratorBase
             {
                 int height = 0;
                 height += GetNoise(x, 0, z, Frequency, Max);
-                for (int y = chunk.cPosition.y; y < chunk.cPosition.y + Chunk.cSize; y++)
+                for(int y=height-1; y < height + 1; y++)
                 {
-                    if(y<= height)
+                    if (chunk.GetVoxel(new Vector3i(x, y, z)) == null)
                     {
-                        if (chunk.GetVoxel(new Vector3i(x, y, z)) == null)
-                        {
-                            Voxel tVoxel = new Voxel();
-                            tVoxel.vColor = Color.green;
-                            chunk.SetVoxel(new Vector3i(x, y, z), tVoxel);
-                        }
+                        Voxel tVoxel = new Voxel();
+                        tVoxel.vColor = Color.green;
+                        chunk.SetVoxel(new Vector3i(x, y, z), tVoxel);
                     }
                 }
             }

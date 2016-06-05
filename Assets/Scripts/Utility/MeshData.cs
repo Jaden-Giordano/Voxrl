@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class MeshData {
 
     //Value Key
-    public Dictionary<Vector3, int> vertices = new Dictionary<Vector3, int>();
-    public Dictionary<Vector3, int> colVertices = new Dictionary<Vector3, int>();
+    public Dictionary<int, Vector3> vertices = new Dictionary<int, Vector3>();
+    public Dictionary<int, Vector3> colVertices = new Dictionary<int, Vector3>();
     //Key Value
     public Dictionary<int, int> triangles = new Dictionary<int, int>();
     public Dictionary<int, Color32> colors = new Dictionary<int, Color32>();
@@ -27,11 +27,11 @@ public class MeshData {
 
     public void AddVertex(Vector3 vertex)
     {
-        vertices.Add(vertex, vertices.Count);
+        vertices.Add(vertices.Count, vertex);
 
         if (useRenderDataForCol)
         {
-            colVertices.Add(vertex, colVertices.Count);
+            colVertices.Add(vertices.Count, vertex);
         }
     }
 
@@ -57,9 +57,9 @@ public class MeshData {
     {
         Vector3[] tempArray = new Vector3[vertices.Count];
         int i = 0;
-        foreach(Vector3 key in vertices.Keys)
+        foreach(Vector3 value in vertices.Values)
         {
-            tempArray[i] = key;
+            tempArray[i] = value;
             i++;
         }
         return tempArray;

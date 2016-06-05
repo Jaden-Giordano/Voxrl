@@ -72,8 +72,8 @@ public class BasicWorldRenderer : RendererBase
         mesh.triangles = meshData.TriangleArray();
         mesh.colors32 = meshData.ColorArray();
 
-        mesh.RecalculateBounds();
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
 
         Logger.Instance.OutputLog();
 
@@ -103,17 +103,10 @@ public class BasicWorldRenderer : RendererBase
     {
         Vector3i pos = new Vector3i(x, y, z);
 
-        if (chunk.GetVoxel(pos) != null)
-        {
-            if (chunk.GetVoxel(pos).vColor.a == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return true;
+        if (chunk.GetVoxel(pos) == null)
+            return true;
+        if (chunk.GetVoxel(pos).vColor.a < 1)
+            return true;
+        return false;
     }
 }
