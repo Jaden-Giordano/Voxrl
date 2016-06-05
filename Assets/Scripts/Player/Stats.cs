@@ -18,7 +18,7 @@ public class Stats : MonoBehaviour {
     }
 
     public int AwardExp {
-        get { return Mathf.FloorToInt(.3f*Level); }
+        get { return Mathf.FloorToInt(.3f*Level+2); }
     }
 
     private int lastLevel = 0;
