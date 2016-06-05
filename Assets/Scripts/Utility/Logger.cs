@@ -16,7 +16,6 @@ public class Logger : MonoBehaviour {
 
     void Start() {
         _Instance = this;
-<<<<<<< HEAD
 
         StartCoroutine(OutputLogs());
     }
@@ -24,10 +23,6 @@ public class Logger : MonoBehaviour {
     public void AddLog(string msg) {
         logs.Add(msg);
     }
-=======
-        StartCoroutine(OutputLogs());
-    }
->>>>>>> refs/remotes/origin/master
 
     public void Log(string msg) {
         logs.Add(msg);
@@ -71,9 +66,4 @@ public class Logger : MonoBehaviour {
             yield return null;
         }
     }
-<<<<<<< HEAD
 }
-=======
-
-}
->>>>>>> refs/remotes/origin/master
