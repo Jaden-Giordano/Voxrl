@@ -32,8 +32,8 @@ public class PlayerController : MonoBehaviour {
 
     void Update() {
         pan += new Vector2(-cameraHorizontalPanSpeed * Input.GetAxis("Mouse X"), cameraVerticalPanSpeed * Input.GetAxis("Mouse Y"));
-        if (pan.y < -85)
-            pan.y = -85;
+        if (pan.y < -65)
+            pan.y = -65;
         else if (pan.y > 85)
             pan.y = 85;
 
