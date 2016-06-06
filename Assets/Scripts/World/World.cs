@@ -13,8 +13,6 @@ public class World : MonoBehaviour
     public int wSize;
     public int wMinSize = 256;
 
-    public Vector3i cGenerationPos;
-
     private Queue<Vector3i> cToGenerate = new Queue<Vector3i>();
 
     GeneratorBase cGenerator;
@@ -38,7 +36,7 @@ public class World : MonoBehaviour
     {
         if (cGenerate)
         {
-            for (int x = -(int)worldSize.x; x < worldSize.x; x++) 
+            /*for (int x = -(int)worldSize.x; x < worldSize.x; x++) 
             {
                 for (int y = -(int)worldSize.y; y < worldSize.y; y++)
                 {
@@ -47,7 +45,8 @@ public class World : MonoBehaviour
                         AddChunk(new Vector3i(x, y, z));
                     }
                 }
-            }
+            }*/
+            AddChunk(new Vector3i());
         }
 
         StartCoroutine(CreateChunk());

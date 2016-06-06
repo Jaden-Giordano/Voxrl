@@ -35,19 +35,10 @@ public class BasicWorldGeneration : GeneratorBase
         {
 
             Voxel tVox = new Voxel();
-            if (y <= stoneHeight)
+            if (y < stoneHeight+2 && y > stoneHeight-1)
             {
-                tVox.vColor = Color.gray;
+                tVox.vColor = biome.baseColors[0];
                 chunk.SetVoxel(new Vector3i(x,y,z), tVox);
-            }
-            else if (y <= dirtHeight)
-            {
-                tVox.vColor = Color.green;
-                chunk.SetVoxel(new Vector3i(x, y, z), tVox);
-            }
-            else
-            {
-                //chunk.SetVoxel(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockAir());
             }
 
         }
