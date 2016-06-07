@@ -9,28 +9,47 @@ public class BasicWorldGeneration : GeneratorBase
     public override void GenerateColumn(int x, int z)
     {
         int Height = 0;
+        int HeightX = GetNoise(x, 0, z, Biomes.Instance.biomes[0].NoiseFrequency, Biomes.Instance.biomes[0].MaxHeight);
+        int HeightZ = GetNoise(x, 0, z, Biomes.Instance.biomes[0].NoiseFrequency, Biomes.Instance.biomes[0].MaxHeight);
 
         int temp = GetTemperature(x, z, 0.01f);
         int humid = GetTemperature(x, z, 0.01f);
 
+        Vector2[] bScalingFactor = new Vector2[Biomes.Instance.biomes.Length];
+
+        //Color32 c;
+
+        for(int i=0;i<Biomes.Instance.biomes.Length;i++)
+        {
+            bScalingFactor[i].x = 1-Mathf.Abs(Biomes.Instance.biomes[i].TempHumidPoint.x - temp) / 100;
+            bScalingFactor[i].y = 1-Mathf.Abs(Biomes.Instance.biomes[i].TempHumidPoint.y - humid) / 100;
+
+            int tempNoise = GetNoise(x, 0, z, Biomes.Instance.biomes[i].NoiseFrequency, Biomes.Instance.biomes[i].MaxHeight);
+
+            float tx = tempNoise * bScalingFactor[i].x;
+            float tz = tempNoise * bScalingFactor[i].y;
+
+            Height += (int)((tx + tz) / 2);
+        }
+        
         int biome = 0;
 
-        if (temp > 50 && humid > 50)
-            biome = 1;
-
-        if (temp > 50 && humid <= 50)
+        if (temp < 50 && humid < 50)
             biome = 0;
-
-        if (temp <= 50 && humid > 50)
+        if (temp >= 50 && humid >= 50)
+            biome = 1;
+        if (temp >= 50 && humid < 50)
             biome = 2;
-
-        if (temp <= 50 && humid <= 50)
+        if (temp < 50 && humid >= 50)
             biome = 3;
 
-        Height += GetNoise(x, 0, z, Biomes.Instance.biomes[biome].NoiseFrequency, Biomes.Instance.biomes[biome].MaxHeight);
-
-        if (Height < Biomes.Instance.biomes[biome].MinHeight)
-            Height = Biomes.Instance.biomes[biome].MinHeight;
+        /*
+        HeightX += (int)Mathf.Lerp(GetNoise(x, 0, z, Biomes.Instance.biomes[3].NoiseFrequency, Biomes.Instance.biomes[3].MaxHeight), GetNoise(x, 0, z, Biomes.Instance.biomes[1].NoiseFrequency, Biomes.Instance.biomes[1].MaxHeight), x/64f);
+        HeightZ += (int)Mathf.Lerp(GetNoise(x, 0, z, Biomes.Instance.biomes[3].NoiseFrequency, Biomes.Instance.biomes[3].MaxHeight), GetNoise(x, 0, z, Biomes.Instance.biomes[1].NoiseFrequency, Biomes.Instance.biomes[1].MaxHeight), z / 64f);
+        Height = (HeightX + HeightZ) / 2;
+        */
+        /*if (Height < Biomes.Instance.biomes[biome].MinHeight)
+            Height = Biomes.Instance.biomes[biome].MinHeight;*/
 
         for (int y = chunk.cPosition.y; y < chunk.cPosition.y + Chunk.cSize; y++)
         {
@@ -45,6 +64,12 @@ public class BasicWorldGeneration : GeneratorBase
                 tVox.vColor = Biomes.Instance.biomes[biome].vTypes[1];
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
             }
+            if (y > Height && y < 0 && biome == 3)
+            {
+                tVox.vColor = Biomes.Instance.biomes[biome].vTypes[3];
+                chunk.SetVoxel(new Vector3i(x, y, z), tVox);
+            }
+
         }
     }
 

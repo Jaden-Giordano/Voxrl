@@ -19,7 +19,7 @@ public class OctreeNode<T>
     public Vector3 Center { get; private set; }
     public float SideLength { get; private set; }
 
-    int AllowedObjects = 8;
+    int AllowedObjects = 32;
 
     public OctreeNode(float InitialSize, Vector3 InitialCenter, float MinSize)
     {

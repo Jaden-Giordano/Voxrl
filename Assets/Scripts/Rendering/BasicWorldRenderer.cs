@@ -71,7 +71,26 @@ public class BasicWorldRenderer : RendererBase
         mesh.colors32 = meshData.ColorArray();
 
         mesh.RecalculateNormals();
-        mesh.Optimize();
+
+        return mesh;
+    }
+
+    public Mesh ToCollisionMesh(Mesh mesh)
+    {
+        if (meshData.colVertices.Count == 0)
+        {
+            GameObject.Destroy(mesh);
+            return null;
+        }
+
+        if (mesh == null)
+            mesh = new Mesh();
+
+        mesh.vertices = meshData.ColVertexArray();
+        mesh.triangles = meshData.ColTriangleArray();
+
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
 
         return mesh;
     }
@@ -91,6 +110,23 @@ public class BasicWorldRenderer : RendererBase
         meshData.AddTriangle(index);
         meshData.AddTriangle(index + 2);
         meshData.AddTriangle(index + 3);
+
+        if (voxel.vColor.a < 0.9)
+        {
+            int cIndex = meshData.colVertices.Count;
+            meshData.AddColVertex(v1);
+            meshData.AddColVertex(v2);
+            meshData.AddColVertex(v3);
+            meshData.AddColVertex(v4);
+
+            meshData.AddTriangle(cIndex);
+            meshData.AddTriangle(cIndex + 1);
+            meshData.AddTriangle(cIndex + 2);
+
+            meshData.AddTriangle(cIndex);
+            meshData.AddTriangle(cIndex + 2);
+            meshData.AddTriangle(cIndex + 3);
+        }
 
         meshData.AddColor(voxel.vColor);
     }

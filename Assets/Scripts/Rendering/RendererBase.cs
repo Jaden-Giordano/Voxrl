@@ -9,4 +9,5 @@ public interface RendererBase {
     void Render(World world, Chunk chunk);
 
     Mesh ToMesh(Mesh mesh);
+    Mesh ToCollisionMesh(Mesh mesh);
 }

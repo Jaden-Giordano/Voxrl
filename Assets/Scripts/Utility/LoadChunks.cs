@@ -52,9 +52,14 @@ public class LoadChunks : MonoBehaviour
     public HashSet<Vector3i> cToDelete;
 
     public int chunkLoadDistance = 2;
+    Vector3i objPos = new Vector3i();
 
     private void Update()
     {
+        objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cSize);
+        objPos.y = 0;
+        objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cSize);
+
         DeleteChunks();
         LChunks();
     }
@@ -65,9 +70,9 @@ public class LoadChunks : MonoBehaviour
 
         foreach (Vector3i cPos in loadedChunks)
         {
-            if (Mathf.Abs(Mathf.Pow(transform.position.x + transform.position.z, 2) - Mathf.Pow(cPos.x + cPos.z, 2)) > chunkLoadDistance * Chunk.cSize)
+            if (Mathf.Pow(cPos.x, 2) + Mathf.Pow(cPos.x, 2) > chunkLoadDistance)
             {
-                cToDelete.Add(cPos);
+                //cToDelete.Add(cPos);
             }
         }
 
@@ -80,20 +85,24 @@ public class LoadChunks : MonoBehaviour
 
     public void LChunks()
     {
-        Vector3i objPos = new Vector3i();
-        objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cSize);
-        objPos.y = Mathf.FloorToInt(transform.position.y / Chunk.cSize);
-        objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cSize);
 
-        foreach(Vector3i Pos in chunkPositions)
+        for(int i=0;i<chunkPositions.Length;i++)
         {
-            Vector3i cPos = Pos + objPos;
-            for (int y = -6; y < 6; y++) 
+            Vector3i Pos = chunkPositions[i];
+            for (int y = -1; y < 6; y++) 
             {
-                if (!loadedChunks.Contains(cPos) && Mathf.Abs(Mathf.Pow(transform.position.x + transform.position.z, 2) - Mathf.Pow(cPos.x + cPos.z, 2)) < chunkLoadDistance * Chunk.cSize)
+                objPos.y = y;
+                Vector3i cPos = Pos + objPos;
+                if (Mathf.Pow(Pos.x, 2) + Mathf.Pow(Pos.z, 2) < chunkLoadDistance)
                 {
-                    loadedChunks.Add(new Vector3i(cPos.x, y, cPos.z));
-                    world.AddChunk(new Vector3i(cPos.x, y, cPos.z));
+                    if (!loadedChunks.Contains(cPos))
+                    {
+                        loadedChunks.Add(new Vector3i(cPos.x, y, cPos.z));
+                        world.AddChunk(new Vector3i(cPos.x, y, cPos.z));
+                    }
+                }else
+                {
+                    break;
                 }
             }
         }

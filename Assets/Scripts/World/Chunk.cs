@@ -26,11 +26,6 @@ public class Chunk : MonoBehaviour
 
     private RendererBase renderer;
 
-    public bool testVoxel = false;
-
-    public bool oBounds = false;
-    public bool oPoints = false;
-
     public Chunk[] SurroundingChunks = new Chunk[6];
 
     void Awake()
@@ -88,7 +83,6 @@ public class Chunk : MonoBehaviour
     {
         if (InRange(pos))
         {
-            //Logger.Instance.AddLog(cVoxels.Get(pos).ToString());
             return cVoxels.Get(pos);
         }
         return world.GetVoxel(pos);
@@ -111,9 +105,11 @@ public class Chunk : MonoBehaviour
             cRendered = true;
             renderer.Render(world, this);
             Mesh tempMesh = new Mesh();
+            Mesh tempCollisionMesh = new Mesh();
             tempMesh = renderer.ToMesh(tempMesh);
+            tempCollisionMesh = renderer.ToCollisionMesh(tempCollisionMesh);
             cFilter.sharedMesh = tempMesh;
-            cColl.sharedMesh = tempMesh;
+            cColl.sharedMesh = tempCollisionMesh;
         }
     }
 
@@ -137,13 +133,5 @@ public class Chunk : MonoBehaviour
     {
         renderer.Render(world, this);
         yield break;
-    }
-
-    public void OnDrawGizmos()
-    {
-        if (oBounds)
-            cVoxels.DrawAllBounds();
-        if (oPoints)
-            cVoxels.DrawAllPoints();
     }
 }

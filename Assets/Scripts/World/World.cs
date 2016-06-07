@@ -14,6 +14,7 @@ public class World : MonoBehaviour
     public int wMinSize = 256;
 
     private Queue<Vector3i> cToGenerate = new Queue<Vector3i>();
+    private Queue<Vector3i> cToRemove = new Queue<Vector3i>();
 
     GeneratorBase cGenerator;
     public bool cGenerate = true;
@@ -24,7 +25,7 @@ public class World : MonoBehaviour
 
     void Awake()
     {
-        wChunks = new Octree<Chunk>(wSize, Vector3.zero, wMinSize);
+        wChunks = new Octree<Chunk>(wSize, new Vector3(Chunk.cSize, Chunk.cSize, Chunk.cSize) * Voxel.vSize, wMinSize);
 
         cGenerator = new BasicWorldGeneration();
 
@@ -50,6 +51,7 @@ public class World : MonoBehaviour
         }
 
         StartCoroutine(CreateChunk());
+        StartCoroutine(RemoveChunk());
     }
 
     //Keep this function here, It doesn't work in it's old position below RemoveVoxel
@@ -96,11 +98,26 @@ public class World : MonoBehaviour
     public void DestroyChunk(Vector3i pos)
     {
         pos *= Chunk.cSize;
-        Chunk tempChunk = GetChunk(pos);
-        if (tempChunk != null)
+
+        cToRemove.Enqueue(pos);
+    }
+
+    IEnumerator RemoveChunk()
+    {
+        Vector3i[] TempPositions = new Vector3i[cToRemove.Count];
+        cToRemove.CopyTo(TempPositions, 0);
+        cToRemove.Clear();
+
+        foreach(Vector3i pos in TempPositions)
         {
-            Destroy(tempChunk.gameObject);
-            wChunks.Remove(pos);
+            Chunk tempChunk = GetChunk(pos);
+            if (tempChunk != null)
+            {
+                yield return Ninja.JumpToUnity;
+                Destroy(tempChunk);
+                yield return Ninja.JumpBack;
+                wChunks.Remove(pos);
+            }
         }
     }
 
