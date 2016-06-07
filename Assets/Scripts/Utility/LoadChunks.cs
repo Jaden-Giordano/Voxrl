@@ -65,9 +65,8 @@ public class LoadChunks : MonoBehaviour
 
         foreach (Vector3i cPos in loadedChunks)
         {
-            if (Vector3.Distance(transform.position, cPos.ToVector3()) > chunkLoadDistance * Chunk.cSize)
+            if (Mathf.Abs(Mathf.Pow(transform.position.x + transform.position.z, 2) - Mathf.Pow(cPos.x + cPos.z, 2)) > chunkLoadDistance * Chunk.cSize)
             {
-                //Logger.Instance.AddLog("Chunk Distance: " + Vector3.Distance(transform.position, cPos.ToVector3()).ToString());
                 cToDelete.Add(cPos);
             }
         }
@@ -98,25 +97,6 @@ public class LoadChunks : MonoBehaviour
                 }
             }
         }
-
-
-        /*for (int x = objPos.x - chunkLoadDistance; x < objPos.x + chunkLoadDistance; x ++) 
-        {
-            for (int y = objPos.y - chunkLoadDistance; y < objPos.y + chunkLoadDistance; y++) 
-            {
-                for (int z = objPos.z - chunkLoadDistance; z < objPos.z + chunkLoadDistance; z++)
-                {
-                    //Logger.Instance.AddLog("Possible Chunk Pos: " + new Vector3i(x, y, z).ToString());
-                    if(!loadedChunks.Contains(new Vector3i(x, y, z)) && Vector3.Distance(transform.position, new Vector3(x,y,z)) < chunkLoadDistance * Chunk.cSize)
-                    {
-                        Logger.Instance.Log("Load Chunk Pos: " + new Vector3i(x, y, z).ToString());
-                        loadedChunks.Add(new Vector3i(x, y, z));
-                        world.AddChunk(new Vector3i(x, y, z));
-                    }
-                }
-            }
-        }*/
-        Logger.Instance.OutputLog();
     }
 
 }

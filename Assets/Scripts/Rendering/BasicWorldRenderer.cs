@@ -28,27 +28,27 @@ public class BasicWorldRenderer : RendererBase
             Voxel voxel = chunk.GetVoxel(vox);
 
             Vector3 start = new Vector3(vox.x, vox.y, vox.z);
-            if (MustFaceBeVisible(vox.x - 1, vox.y, vox.z))
+            if (MustFaceBeVisible(vox.x - 1, vox.y, vox.z, voxel.vColor.a))
             {
                 DrawFace((start) * Voxel.vSize, (start + Vector3.forward) * Voxel.vSize, (start + Vector3.forward + Vector3.up) * Voxel.vSize, (start + Vector3.up) * Voxel.vSize, voxel);
             }
-            if (MustFaceBeVisible(vox.x + 1, vox.y, vox.z))
+            if (MustFaceBeVisible(vox.x + 1, vox.y, vox.z, voxel.vColor.a))
             {
                 DrawFace((start + Vector3.right + Vector3.forward) * Voxel.vSize, (start + Vector3.right) * Voxel.vSize, (start + Vector3.right + Vector3.up) * Voxel.vSize, (start + Vector3.right + Vector3.forward + Vector3.up) * Voxel.vSize, voxel);
             }
-            if (MustFaceBeVisible(vox.x, vox.y - 1, vox.z))
+            if (MustFaceBeVisible(vox.x, vox.y - 1, vox.z, voxel.vColor.a))
             {
                 DrawFace((start + Vector3.forward) * Voxel.vSize, (start) * Voxel.vSize, (start + Vector3.right) * Voxel.vSize, (start + Vector3.right + Vector3.forward) * Voxel.vSize, voxel);
             }
-            if (MustFaceBeVisible(vox.x, vox.y + 1, vox.z))
+            if (MustFaceBeVisible(vox.x, vox.y + 1, vox.z, voxel.vColor.a))
             {
                 DrawFace((start + Vector3.up) * Voxel.vSize, (start + Vector3.up + Vector3.forward) * Voxel.vSize, (start + Vector3.up + Vector3.forward + Vector3.right) * Voxel.vSize, (start + Vector3.up + Vector3.right) * Voxel.vSize, voxel);
             }
-            if (MustFaceBeVisible(vox.x, vox.y, vox.z - 1))
+            if (MustFaceBeVisible(vox.x, vox.y, vox.z - 1, voxel.vColor.a))
             {
                 DrawFace((start + Vector3.right) * Voxel.vSize, (start) * Voxel.vSize, (start + Vector3.up) * Voxel.vSize, (start + Vector3.up + Vector3.right) * Voxel.vSize, voxel);
             }
-            if (MustFaceBeVisible(vox.x, vox.y, vox.z + 1))
+            if (MustFaceBeVisible(vox.x, vox.y, vox.z + 1, voxel.vColor.a))
             {
                 DrawFace((start + Vector3.forward) * Voxel.vSize, (start + Vector3.forward + Vector3.right) * Voxel.vSize, (start + Vector3.forward + Vector3.right + Vector3.up) * Voxel.vSize, (start + Vector3.forward + Vector3.up) * Voxel.vSize, voxel);
             }
@@ -71,7 +71,7 @@ public class BasicWorldRenderer : RendererBase
         mesh.colors32 = meshData.ColorArray();
 
         mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
+        mesh.Optimize();
 
         return mesh;
     }
@@ -95,13 +95,14 @@ public class BasicWorldRenderer : RendererBase
         meshData.AddColor(voxel.vColor);
     }
 
-    private bool MustFaceBeVisible(int x, int y, int z)
+    private bool MustFaceBeVisible(int x, int y, int z, float a)
     {
         Vector3i pos = new Vector3i(x, y, z);
-
         if (chunk.GetVoxel(pos) == null)
             return true;
-        if (chunk.GetVoxel(pos).vColor.a < 1)
+        /*if (a < 1 && chunk.GetVoxel(pos).vColor.a < 1)
+            return false;*/
+        if (a == 255 && chunk.GetVoxel(pos).vColor.a < 255)
             return true;
         return false;
     }

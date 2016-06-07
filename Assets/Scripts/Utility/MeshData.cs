@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class MeshData {
+public class MeshData
+{
 
     //Value Key
     public Dictionary<int, Vector3> vertices = new Dictionary<int, Vector3>();
@@ -57,7 +58,7 @@ public class MeshData {
     {
         Vector3[] tempArray = new Vector3[vertices.Count];
         int i = 0;
-        foreach(Vector3 value in vertices.Values)
+        foreach (Vector3 value in vertices.Values)
         {
             tempArray[i] = value;
             i++;

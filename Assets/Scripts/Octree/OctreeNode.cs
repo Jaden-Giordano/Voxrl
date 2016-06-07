@@ -31,9 +31,6 @@ public class OctreeNode<T>
         T tempVox = default(T);
         if (objects.ContainsKey(position))
         {
-            if(!objects.TryGetValue(position, out tempVox))
-                Logger.Instance.Log(
-                    objects.TryGetValue(position, out tempVox).ToString());
             objects.TryGetValue(position, out tempVox);
         }
 

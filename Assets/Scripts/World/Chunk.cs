@@ -35,8 +35,6 @@ public class Chunk : MonoBehaviour
 
     void Awake()
     {
-        Logger.Instance.Log(cPosition.ToString());
-
         cFilter = gameObject.GetComponent<MeshFilter>();
         cColl = gameObject.GetComponent<MeshCollider>();
 
