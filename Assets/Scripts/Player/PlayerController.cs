@@ -70,12 +70,13 @@ public class PlayerController : MonoBehaviour {
             if (Input.GetButton("Jump"))
                 moveDirection.y = jumpSpeed;
 
-            if (Mathf.Abs(inputAxis.magnitude) > 0) {
-                anim.Play("Walk");
+            if (Mathf.Abs(inputAxis.x) > 0 || Mathf.Abs(inputAxis.z) > 0) {
+                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                    anim.SetBool("Walking", true);
             }
             else {
-                anim.Play("Idle");
-                anim.speed = 1;
+                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                    anim.SetBool("Walking", false);
             }
         }
         moveDirection.y -= gravity * Time.deltaTime;
