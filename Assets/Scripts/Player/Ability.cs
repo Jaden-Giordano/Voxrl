@@ -32,6 +32,8 @@ public abstract class Ability {
 
     protected BattleSystem owner;
 
+    public string name = "Ability";
+
     public Ability(BattleSystem owner) {
         effects = new List<Effect>();
     }

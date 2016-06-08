@@ -12,8 +12,10 @@ public class BashAbility : Ability {
 
         this.AddEffect(new StunEffect(this.owner, .4f));
 
-        DamageEffect dm = new DamageEffect(this.owner, 1f, this.owner.stats.damage*1.1f);
+        DamageEffect dm = new DamageEffect(owner, 1f, owner.stats.damage*1.1f);
         this.AddEffect(dm);
+
+        this.name = "Base Ability";
     }
 
 }

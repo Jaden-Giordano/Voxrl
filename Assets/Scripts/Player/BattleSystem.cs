@@ -26,27 +26,35 @@ public class BattleSystem : MonoBehaviour {
         }
 
         foreach (Ability a in abilities) {
-            a.Update();
+            if (a != null)
+                a.Update();
         }
     }
 
     protected virtual void UseAbility(int index) {
         Ability a = abilities[index];
-        if (a.available) {
-            // play ability animation
-            Effect[] efs = a.GenerateEffects();
-            if (a.selfAfflict)
-                this.Effected(efs);
-            else {
-                GameObject[] hits = a.GetEffectedObjects(this.transform);
-                foreach (GameObject i in hits) {
-                    if (i.tag == "Mob") {
-                        BattleSystem mob = i.GetComponent<BattleSystem>();
-                        mob.Effected(efs);
+        if (a != null) {
+            if (a.available) {
+                Logger.Instance.Log("Used Ability " + index);
+                // play ability animation
+                Animator anim = this.transform.GetComponentInChildren<Animator>();
+                if (anim != null) {
+                    anim.SetBool("Attacking", true);
+                }
+                Effect[] efs = a.GenerateEffects();
+                if (a.selfAfflict)
+                    this.Effected(efs);
+                else {
+                    GameObject[] hits = a.GetEffectedObjects(this.transform);
+                    foreach (GameObject i in hits) {
+                        if (i.tag == "Mob") {
+                            BattleSystem mob = i.GetComponent<BattleSystem>();
+                            mob.Effected(efs);
+                        }
                     }
                 }
+                a.Reset();
             }
-            a.Reset();
         }
     }
 
