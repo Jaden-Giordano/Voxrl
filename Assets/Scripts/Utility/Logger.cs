@@ -14,10 +14,15 @@ public class Logger : MonoBehaviour {
 
     private List<string> logs = new List<string>();
 
-	void Start () {
+    void Start() {
         _Instance = this;
+
         StartCoroutine(OutputLogs());
-	}
+    }
+
+    public void AddLog(string msg) {
+        logs.Add(msg);
+    }
 
     public void Log(string msg) {
         logs.Add(msg);
@@ -27,7 +32,7 @@ public class Logger : MonoBehaviour {
         logs.Add(msg.ToString());
     }
 
-    [Obsolete("Use Add Log, outputting is automatic.")]
+    [Obsolete("Use Log, outputting is automatic.")]
     public void OutputLog() {
         List<StringBuilder> bs = new List<StringBuilder>();
 
@@ -40,7 +45,7 @@ public class Logger : MonoBehaviour {
         }
         logs.Clear();
 
-        foreach(StringBuilder i in bs) {
+        foreach (StringBuilder i in bs) {
             Debug.Log(i.ToString());
         }
     }
@@ -61,5 +66,4 @@ public class Logger : MonoBehaviour {
             yield return null;
         }
     }
-
 }
