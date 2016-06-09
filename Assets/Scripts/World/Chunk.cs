@@ -10,8 +10,11 @@ using CielaSpike;
 public class Chunk : MonoBehaviour
 {
 
-    public Octree<Voxel> cVoxels;
-    public static int cSize = 32;
+    public Voxel[,,] cVoxels;
+
+    //public Octree<Voxel> cVoxels;
+    public static int cWidth = 32;
+    public static int cHeight = 12*32;
 
     private MeshFilter cFilter;
     private MeshCollider cColl;
@@ -36,11 +39,6 @@ public class Chunk : MonoBehaviour
         renderer = new BasicWorldRenderer();
     }
 
-    void Start()
-    {
-        renderer.Initialize();
-    }
-
     void FixedUpdate()
     {
         if (cDirty)
@@ -50,14 +48,18 @@ public class Chunk : MonoBehaviour
         }
         if (!cRendered)
             StartCoroutine(Render());
+            //Runder();
+
+        //MeshData errors - Duplicate vertex indexes, not sure how that's happening, possibly due to the multithread thing
+        //Without Multithread - Only renders a 32x32x32 instead of a whole chunk (32x384x32)
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
     {
         if (InRange(pos))
         {
-
-            cVoxels.Add(vox, pos);
+            pos -= cPosition;
+            cVoxels[pos.x, pos.y, pos.z] = vox;
             this.cDirty = true;
         }
         else
@@ -70,7 +72,9 @@ public class Chunk : MonoBehaviour
     {
         if (InRange(pos))
         {
-            cVoxels.Remove(pos);
+            pos -= cPosition;
+            cVoxels[pos.x, pos.y, pos.z] = null;
+            //cVoxels.Remove(pos);
             this.cDirty = true;
         }
         else
@@ -83,18 +87,18 @@ public class Chunk : MonoBehaviour
     {
         if (InRange(pos))
         {
-            return cVoxels.Get(pos);
+            pos -= cPosition;
+            return cVoxels[pos.x, pos.y, pos.z];
+            //return cVoxels.Get(pos);
         }
         return world.GetVoxel(pos);
     }
 
     private bool InRange(Vector3i pos)
     {
-        if (pos.x < cPosition.x || pos.x >= cPosition.x + Chunk.cSize)
+        if (pos.x < cPosition.x || pos.x >= cPosition.x + Chunk.cWidth)
             return false;
-        if (pos.y < cPosition.y || pos.y >= cPosition.y + Chunk.cSize)
-            return false;
-        if (pos.z < cPosition.z || pos.z >= cPosition.z + Chunk.cSize)
+        if (pos.z < cPosition.z || pos.z >= cPosition.z + Chunk.cWidth)
             return false;
         return true;
     }
@@ -102,14 +106,13 @@ public class Chunk : MonoBehaviour
     {
         if (cGenerated)
         {
+            renderer.Initialize(world, this);
             cRendered = true;
-            renderer.Render(world, this);
             Mesh tempMesh = new Mesh();
-            Mesh tempCollisionMesh = new Mesh();
+            renderer.ReduceMesh();
             tempMesh = renderer.ToMesh(tempMesh);
-            tempCollisionMesh = renderer.ToCollisionMesh(tempCollisionMesh);
             cFilter.sharedMesh = tempMesh;
-            cColl.sharedMesh = tempCollisionMesh;
+            cColl.sharedMesh = tempMesh;
         }
     }
 
@@ -118,20 +121,23 @@ public class Chunk : MonoBehaviour
         Task task;
         if (cGenerated)
         {
+            renderer.Initialize(world, this);
             cRendered = true;
             this.StartCoroutineAsync(ProcessMesh(), out task);
             yield return StartCoroutine(task.Wait());
             Mesh tempMesh = new Mesh();
+            //Mesh tempColMesh = new Mesh();
             tempMesh = renderer.ToMesh(tempMesh);
+            //tempColMesh = renderer.ToCollisionMesh(tempColMesh);
             cFilter.sharedMesh = tempMesh;
-            cColl.sharedMesh = tempMesh;
+            //cColl.sharedMesh = tempColMesh;
         }
         yield break;
     }
 
     IEnumerator ProcessMesh()
     {
-        renderer.Render(world, this);
+        renderer.ReduceMesh();
         yield break;
     }
 }

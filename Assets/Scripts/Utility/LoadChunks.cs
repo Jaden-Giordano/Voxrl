@@ -56,9 +56,9 @@ public class LoadChunks : MonoBehaviour
 
     private void Update()
     {
-        objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cSize);
+        objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cWidth);
         objPos.y = 0;
-        objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cSize);
+        objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cWidth);
 
         DeleteChunks();
         LChunks();
@@ -68,11 +68,16 @@ public class LoadChunks : MonoBehaviour
     {
         cToDelete = new HashSet<Vector3i>();
 
+
+
         foreach (Vector3i cPos in loadedChunks)
         {
-            if (Mathf.Pow(cPos.x, 2) + Mathf.Pow(cPos.x, 2) > chunkLoadDistance)
+            for (int y = -6; y < 6; y++)
             {
-                //cToDelete.Add(cPos);
+                if (Mathf.Pow(cPos.x, 2) + Mathf.Pow(cPos.x, 2) > chunkLoadDistance)
+                {
+                    //cToDelete.Add(new Vector3i(cPos.x, y, cPos.z));
+                }
             }
         }
 
@@ -89,16 +94,17 @@ public class LoadChunks : MonoBehaviour
         for(int i=0;i<chunkPositions.Length;i++)
         {
             Vector3i Pos = chunkPositions[i];
-            for (int y = -1; y < 6; y++) 
+            for (int y = -6; y < 6; y++) 
             {
                 objPos.y = y;
                 Vector3i cPos = Pos + objPos;
                 if (Mathf.Pow(Pos.x, 2) + Mathf.Pow(Pos.z, 2) < chunkLoadDistance)
                 {
-                    if (!loadedChunks.Contains(cPos))
+                    if (world.GetChunk(cPos) == null)
                     {
-                        loadedChunks.Add(new Vector3i(cPos.x, y, cPos.z));
-                        world.AddChunk(new Vector3i(cPos.x, y, cPos.z));
+                        if(!loadedChunks.Contains(new Vector3i(cPos.x, 0, cPos.z)))
+                            loadedChunks.Add(new Vector3i(cPos.x, 0, cPos.z));
+                        world.AddChunk(cPos);
                     }
                 }else
                 {

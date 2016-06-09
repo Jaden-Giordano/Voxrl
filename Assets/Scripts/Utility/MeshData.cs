@@ -4,14 +4,13 @@ using System.Collections.Generic;
 
 public class MeshData
 {
-
-    //Value Key
     public Dictionary<int, Vector3> vertices = new Dictionary<int, Vector3>();
     public Dictionary<int, Vector3> colVertices = new Dictionary<int, Vector3>();
-    //Key Value
+
     public Dictionary<int, int> triangles = new Dictionary<int, int>();
-    public Dictionary<int, Color32> colors = new Dictionary<int, Color32>();
     public Dictionary<int, int> colTriangles = new Dictionary<int, int>();
+
+    public Dictionary<int, Color32> colors = new Dictionary<int, Color32>();
 
     public bool useRenderDataForCol = false;
 
@@ -33,17 +32,12 @@ public class MeshData
     
     public void AddColVertex(Vector3 vertex)
     {
-        colVertices.Add(vertices.Count, vertex);
+        colVertices.Add(colVertices.Count, vertex);
     }
 
     public void AddTriangle(int tri)
     {
         triangles.Add(triangles.Count, tri);
-
-        if (useRenderDataForCol)
-        {
-            colTriangles.Add(colTriangles.Count, tri);
-        }
     }
     public void AddColTriangle(int tri)
     {

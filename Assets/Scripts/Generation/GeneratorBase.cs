@@ -9,9 +9,9 @@ public class GeneratorBase {
     public void Generate(World world, Chunk chunk) {
 		this.world = world;
 		this.chunk = chunk;
-        for (int x = chunk.cPosition.x; x < chunk.cPosition.x + Chunk.cSize; x++)
+        for (int x = chunk.cPosition.x; x < chunk.cPosition.x + Chunk.cWidth; x++)
         {
-            for (int z = chunk.cPosition.z; z < chunk.cPosition.z + Chunk.cSize; z++)
+            for (int z = chunk.cPosition.z; z < chunk.cPosition.z + Chunk.cWidth; z++)
             {
                 GenerateColumn(x,z);
             }

@@ -19,10 +19,10 @@ public class BasicWorldGeneration : GeneratorBase
 
         //Color32 c;
 
-        for(int i=0;i<Biomes.Instance.biomes.Length;i++)
+        for (int i = 0; i < Biomes.Instance.biomes.Length; i++)
         {
-            bScalingFactor[i].x = 1-Mathf.Abs(Biomes.Instance.biomes[i].TempHumidPoint.x - temp) / 100;
-            bScalingFactor[i].y = 1-Mathf.Abs(Biomes.Instance.biomes[i].TempHumidPoint.y - humid) / 100;
+            bScalingFactor[i].x = 1 - Mathf.Abs(Biomes.Instance.biomes[i].TempHumidPoint.x - temp) / 100;
+            bScalingFactor[i].y = 1 - Mathf.Abs(Biomes.Instance.biomes[i].TempHumidPoint.y - humid) / 100;
 
             int tempNoise = GetNoise(x, 0, z, Biomes.Instance.biomes[i].NoiseFrequency, Biomes.Instance.biomes[i].MaxHeight);
 
@@ -31,7 +31,7 @@ public class BasicWorldGeneration : GeneratorBase
 
             Height += (int)((tx + tz) / 2);
         }
-        
+
         int biome = 0;
 
         if (temp < 50 && humid < 50)
@@ -51,7 +51,7 @@ public class BasicWorldGeneration : GeneratorBase
         /*if (Height < Biomes.Instance.biomes[biome].MinHeight)
             Height = Biomes.Instance.biomes[biome].MinHeight;*/
 
-        for (int y = chunk.cPosition.y; y < chunk.cPosition.y + Chunk.cSize; y++)
+        for (int y = 0; y < Chunk.cHeight; y++)
         {
             Voxel tVox = new Voxel();
             if (y == Height)
@@ -59,17 +59,16 @@ public class BasicWorldGeneration : GeneratorBase
                 tVox.vColor = Biomes.Instance.biomes[biome].vTypes[0];
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
             }
-            if (y < Height && y > Height - 5)
+            if (y < Height /*&& y > Height - 5*/)
             {
                 tVox.vColor = Biomes.Instance.biomes[biome].vTypes[1];
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
             }
-            if (y > Height && y < 0 && biome == 3)
+            if (y > Height && y < 192 && biome == 3)
             {
                 tVox.vColor = Biomes.Instance.biomes[biome].vTypes[3];
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
             }
-
         }
     }
 
@@ -80,7 +79,7 @@ public class BasicWorldGeneration : GeneratorBase
 
     public static int GetTemperature(int x, int z, float scale)
     {
-        return Mathf.FloorToInt((Noise.Generate(x* scale, -100, z* scale) + 1f) * (100 / 2f));
+        return Mathf.FloorToInt((Noise.Generate(x * scale, -100, z * scale) + 1f) * (100 / 2f));
     }
 
     public static int GetHumidity(int x, int z, float scale)
