@@ -9,9 +9,12 @@ public class BattleSystem : MonoBehaviour {
 
     public List<Status> currentStatus = new List<Status>();
 
+    public Entity owner;
+
     protected virtual void Start() {
         abilities = new Ability[6];
         stats = GetComponent<Stats>();
+        owner = GetComponent<Entity>();
     }
     
     protected virtual void Update() {
@@ -36,11 +39,8 @@ public class BattleSystem : MonoBehaviour {
         if (a != null) {
             if (a.available) {
                 Logger.Instance.Log("Used Ability " + index);
-                // play ability animation
-                Animator anim = this.transform.GetComponentInChildren<Animator>();
-                if (anim != null) {
-                    anim.SetBool("Attacking", true);
-                }
+                if (index == 0)
+                    owner.RegularAttack();
                 Effect[] efs = a.GenerateEffects();
                 if (a.selfAfflict)
                     this.Effected(efs);

@@ -7,10 +7,8 @@ public class BruteStats : Stats {
 
     protected override void Start() {
         base.Start();
-        this.maxHealth = (this.health *= 1.4f);
-        this.mana *= .4f;
-        this.speed = 3;
-        this.damage *= 1.1f;
+        this.Strength = 2;
+        this.Vitality = 2;
     }
 
 }

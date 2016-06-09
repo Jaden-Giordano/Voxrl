@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour {
 
     private Animator anim;
 
+    private bool stop = false;
+
     void Start() {
         this.camera = this.transform.FindChild("Camera");
         if (focus == null)
@@ -56,7 +58,11 @@ public class PlayerController : MonoBehaviour {
 
         CharacterController controller = this.player.GetComponent<CharacterController>();
 
-        Vector3 inputAxis = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        Vector3 inputAxis = new Vector3((!stop)?Input.GetAxis("Horizontal"):0, 0, (!stop)?Input.GetAxis("Vertical"):0);
+
+        if (inputAxis.magnitude > 1) {
+            inputAxis.Normalize();
+        }
 
         if (controller.isGrounded) {
             float rot = this.focus.transform.rotation.eulerAngles.y;
@@ -122,6 +128,14 @@ public class PlayerController : MonoBehaviour {
 
         camera.position = offset.position;
         camera.LookAt(focus);
+    }
+
+    public void StopMovement() {
+        this.stop = true;
+    }
+
+    public void ResumeMovement() {
+        this.stop = false;
     }
 
 }
