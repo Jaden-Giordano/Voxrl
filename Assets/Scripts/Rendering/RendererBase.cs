@@ -4,9 +4,10 @@ using System.Collections.Generic;
 
 public interface RendererBase {
     
-    void Initialize();
+    void Initialize(World world, Chunk chunk);
 
-    void Render(World world, Chunk chunk);
-
+    void ReduceMesh();
+    
     Mesh ToMesh(Mesh mesh);
+    Mesh ToCollisionMesh(Mesh mesh);
 }

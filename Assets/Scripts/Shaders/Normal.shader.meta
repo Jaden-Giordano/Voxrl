@@ -1,10 +1,15 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/Shaders/VertexColored.shader.meta
 guid: 593a38b85a2bd2548b99d241b5294309
 <<<<<<< HEAD
 timeCreated: 1465155470
 =======
 timeCreated: 1464907430
 >>>>>>> refs/remotes/origin/master
+=======
+guid: 84a3a078fbc7ccc47a4d2a5630de48b2
+timeCreated: 1465420687
+>>>>>>> refs/remotes/origin/All-The-World-Stuff:Assets/Scripts/Shaders/Normal.shader.meta
 licenseType: Free
 ShaderImporter:
   defaultTextures: []

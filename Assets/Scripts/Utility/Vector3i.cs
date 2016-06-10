@@ -12,6 +12,18 @@ public struct Vector3i
         this.y = y;
         this.z = z;
     }
+    public Vector3i(float x, float y, float z)
+    {
+        this.x = (int)x;
+        this.y = (int)y;
+        this.z = (int)z;
+    }
+    public Vector3i(Vector3 a)
+    {
+        this.x = (int)a.x;
+        this.y = (int)a.y;
+        this.z = (int)a.z;
+    }
 
     public static Vector3i operator +(Vector3i a, Vector3i b)
     {
@@ -20,6 +32,10 @@ public struct Vector3i
     public static Vector3i operator +(Vector3i a, int b)
     {
         return new Vector3i(a.x + b, a.y + b, a.z + b);
+    }
+    public static Vector3i operator +(Vector3i a, Vector3 b)
+    {
+        return new Vector3i(a.x + (int)b.x, a.y + (int)b.y, a.z + (int)b.z);
     }
 
     public static Vector3i operator -(Vector3i a, Vector3i b)
@@ -86,6 +102,6 @@ public struct Vector3i
 
     public override string ToString()
     {
-        return "X: " + x + " Y: " + y + " Z: " + z;
+        return "(" + x + ", " + y + ", " + z + ")";
     }
 }
