@@ -42,7 +42,7 @@ public class World : MonoBehaviour
                 }
             }*/
             AddChunk(new Vector3i(0, 0, 0));
-            AddChunk(new Vector3i(1,0,0));
+            //AddChunk(new Vector3i(1,0,0));
         }
 
         StartCoroutine(CreateChunk());

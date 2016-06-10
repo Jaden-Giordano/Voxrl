@@ -7,7 +7,7 @@ public class BiomeGenerator : GeneratorBase
 
     //Biome biome = new Biome();
 
-    public override void GenerateColumn(int x, int z)
+    public override void GenerateColumn(int x, int z, LibNoise.Noise2D fake)
     {
         int height = 0;
         //height += GetNoise(x, 0, z, Frequency, Max);

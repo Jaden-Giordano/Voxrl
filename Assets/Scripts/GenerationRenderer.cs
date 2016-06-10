@@ -50,12 +50,12 @@ public class GenerationRenderer : MonoBehaviour {
         ModuleBase myModule;
 
         Voronoi biomes = new Voronoi();
-        biomes.Seed = World.seed;
+        biomes.Seed = (int)System.DateTime.Now.Ticks;
 
         #region LandScape Generation
         RidgedMultifractal mountainTerrain = new RidgedMultifractal();
         mountainTerrain.Frequency = mountainFrequency;
-        mountainTerrain.Seed = World.seed;
+        mountainTerrain.Seed = (int)System.DateTime.Now.Ticks;
 
         Billow baseFlatTerrain = new Billow();
         baseFlatTerrain.Frequency = baseflatFrequency;
@@ -65,7 +65,7 @@ public class GenerationRenderer : MonoBehaviour {
         Perlin terrainType = new Perlin();
         terrainType.Frequency = terraintypeFrequency;
         terrainType.Persistence = terraintypePersistence;
-        terrainType.Seed = World.seed;
+        terrainType.Seed = (int)System.DateTime.Now.Ticks;
 
         Select terrainSelector = new Select(flatTerrain, mountainTerrain, terrainType);
         terrainSelector.SetBounds(0, 1000);

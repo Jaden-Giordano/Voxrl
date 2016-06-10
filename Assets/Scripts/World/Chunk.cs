@@ -35,9 +35,9 @@ public class Chunk : MonoBehaviour
 
         renderer = new BasicWorldRenderer();
     }
-
     void Start()
-    {
+    { 
+        renderer.Initialize(world, this);
     }
 
     void FixedUpdate()
@@ -46,11 +46,10 @@ public class Chunk : MonoBehaviour
         {
             cDirty = false;
             cRendered = false;
-            renderer.Initialize(world, this);
         }
         if (!cRendered)
-            Runder();
-            //StartCoroutine(Render());
+            //Runder();
+            StartCoroutine(Render());
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
