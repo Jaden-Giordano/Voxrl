@@ -39,9 +39,11 @@ public class BattleSystem : MonoBehaviour {
         if (a != null) {
             if (a.available) {
                 Logger.Instance.Log("Used Ability " + index);
+
+                Effect[] efs = owner.ApplyInventoryStats(a.GenerateEffects());
                 if (index == 0)
                     owner.RegularAttack();
-                Effect[] efs = a.GenerateEffects();
+
                 if (a.selfAfflict)
                     this.Effected(efs);
                 else {
@@ -53,6 +55,7 @@ public class BattleSystem : MonoBehaviour {
                         }
                     }
                 }
+                
                 a.Reset();
             }
         }

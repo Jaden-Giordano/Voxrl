@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour {
     private Vector3 moveDirection = Vector3.zero;
 
     [SerializeField]
-    private Transform player;
+    public Transform player;
 
     private new Transform camera;
     [SerializeField]
@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour {
         }
         moveDirection.y -= gravity * Time.deltaTime;
         player.LookAt(player.position + new Vector3(moveDirection.x, 0, moveDirection.z), Vector3.up);
-        controller.Move(moveDirection * Time.deltaTime);
+        //controller.Move(moveDirection * Time.deltaTime);
 
         UpdateCamera();
     }

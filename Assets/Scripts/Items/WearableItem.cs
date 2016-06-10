@@ -5,6 +5,8 @@ public class WearableItem : Item {
 
     protected ItemStats _itemStats;
 
+    public Vector3 localPosition;
+
     public ItemStats itemStats {
         get { return _itemStats; }
         protected set { _itemStats = value; }
