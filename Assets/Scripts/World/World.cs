@@ -6,14 +6,12 @@ using CielaSpike;
 public class World : MonoBehaviour
 {
 
-    public Octree<Chunk> wChunks;
+    public int seed = 0;
 
-    public int wSize;
-    public int wMinSize = 256;
-
-    public Vector3i cGenerationPos;
-
+    public Dictionary<Vector3i, Chunk> wChunks;
+    
     private Queue<Vector3i> cToGenerate = new Queue<Vector3i>();
+    private Queue<Vector3i> cToRemove = new Queue<Vector3i>();
 
     GeneratorBase cGenerator;
     public bool cGenerate = true;
@@ -24,28 +22,31 @@ public class World : MonoBehaviour
 
     void Awake()
     {
-        wChunks = new Octree<Chunk>(wSize, Vector3.zero, wMinSize);
+        wChunks = new Dictionary<Vector3i, Chunk>();
+        //wChunks = new Octree<Chunk>(wSize, new Vector3(Chunk.cSize, Chunk.cSize, Chunk.cSize) * Voxel.vSize, wMinSize);
 
         cGenerator = new BasicWorldGeneration();
+
+        if (seed == 0)
+            seed = (int)System.DateTime.Now.Ticks;
     }
 
     void FixedUpdate()
     {
         if (cGenerate)
         {
-            for (int x = -(int)worldSize.x; x < worldSize.x; x++) 
+            for (int x = -(int)worldSize.x; x < worldSize.x; x++)
             {
-                for (int y = -(int)worldSize.y; y < worldSize.y; y++)
+                for (int z = -(int)worldSize.z; z < worldSize.z; z++)
                 {
-                    for (int z = -(int)worldSize.z; z < worldSize.z; z++)
-                    {
-                        AddChunk(new Vector3i(x, y, z));
-                    }
+                    AddChunk(new Vector3i(x, 0, z));
                 }
             }
+            //AddChunk(new Vector3i(1,0,0));
         }
 
         StartCoroutine(CreateChunk());
+        StartCoroutine(RemoveChunk());
     }
 
     //Keep this function here, It doesn't work in it's old position below RemoveVoxel
@@ -74,11 +75,12 @@ public class World : MonoBehaviour
 
     public Chunk GetChunk(Vector3i pos)
     {
-        pos.x = Mathf.FloorToInt(pos.x / (float)Chunk.cSize) * Chunk.cSize;
-        pos.y = Mathf.FloorToInt(pos.y / (float)Chunk.cSize) * Chunk.cSize;
-        pos.z = Mathf.FloorToInt(pos.z / (float)Chunk.cSize) * Chunk.cSize;
-
-        return wChunks.Get(pos);
+        pos = (pos / Chunk.cWidth) * Chunk.cWidth;
+        
+        Chunk tempChunk = null;
+        wChunks.TryGetValue(pos, out tempChunk);
+        return tempChunk;
+        //return wChunks.Get(pos);
     }
 
     public void AddChunk(Vector3i pos)
@@ -91,12 +93,27 @@ public class World : MonoBehaviour
 
     public void DestroyChunk(Vector3i pos)
     {
-        pos *= Chunk.cSize;
-        Chunk tempChunk = GetChunk(pos);
-        if (tempChunk != null)
+        pos *= Chunk.cWidth;
+
+        cToRemove.Enqueue(pos);
+    }
+
+    IEnumerator RemoveChunk()
+    {
+        Vector3i[] TempPositions = new Vector3i[cToRemove.Count];
+        cToRemove.CopyTo(TempPositions, 0);
+        cToRemove.Clear();
+
+        foreach(Vector3i pos in TempPositions)
         {
-            Destroy(tempChunk.gameObject);
-            wChunks.Remove(pos);
+            Chunk tempChunk = GetChunk(pos);
+            if (tempChunk != null)
+            {
+                yield return Ninja.JumpToUnity;
+                Destroy(tempChunk);
+                yield return Ninja.JumpBack;
+                wChunks.Remove(pos);
+            }
         }
     }
 
@@ -111,26 +128,27 @@ public class World : MonoBehaviour
         foreach (Vector3i pos in TempPositions)
         {
 
-            if (wChunks.Get(pos) == null)
+            if (!wChunks.ContainsKey(pos))
             {
-                Vector3i TempPos = pos * Chunk.cSize;
+                Vector3i TempPos = pos * Chunk.cWidth;
 
                 yield return Ninja.JumpToUnity;
 
                 GameObject tempChunkObject = Instantiate(chunkPrefab) as GameObject;
                 tempChunkObject.transform.SetParent(this.transform);
-                tempChunkObject.name = (TempPos/Chunk.cSize).ToString();
+                tempChunkObject.name = (TempPos/Chunk.cWidth).ToString();
                 Chunk tempChunkScript = tempChunkObject.GetComponent<Chunk>();
 
                 yield return Ninja.JumpBack;
 
                 tempChunkScript.world = this;
                 tempChunkScript.cPosition = TempPos;
-                tempChunkScript.cVoxels = new Octree<Voxel>(Chunk.cSize, tempChunkScript.cPosition.ToVector3() + new Vector3(Chunk.cSize / 2, Chunk.cSize / 2, Chunk.cSize / 2), 16);
+                tempChunkScript.cVoxels = new Voxel[Chunk.cWidth, Chunk.cHeight, Chunk.cWidth];
+                //tempChunkScript.cVoxels = new Octree<Voxel>(Chunk.cSize, tempChunkScript.cPosition.ToVector3() + new Vector3(Chunk.cSize / 2, Chunk.cSize / 2, Chunk.cSize / 2), 16);
 
                 this.StartCoroutineAsync(GenerateChunk(tempChunkScript), out GenerationTask);
                 yield return StartCoroutine(GenerationTask.Wait());
-                wChunks.Add(tempChunkScript, TempPos);
+                wChunks.Add(TempPos, tempChunkScript);
             }
         }
         yield return new WaitForEndOfFrame();

@@ -3,15 +3,21 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
-    public float speed = 5f;
+    public float speed = 10f;
     public float rotationSpeed = 10f;
     public float jumpSpeed = 8f;
     public float gravity = 20f;
 
     private Vector3 moveDirection = Vector3.zero;
 
+    [SerializeField]
+    private Transform player;
+
     private new Transform camera;
+    [SerializeField]
     private Transform focus;
+    private Vector3 playerLocalFocus;
+    [SerializeField]
     private Transform offset;
     private Vector3 finalOffset;
     [SerializeField]
@@ -23,14 +29,25 @@ public class PlayerController : MonoBehaviour {
     [Range(0, 1)]
     public float zoom = 1;
 
+    private Animator anim;
+
+    private bool stop = false;
+
     void Start() {
-        camera = this.transform.FindChild("Camera");
-        this.focus = this.transform.FindChild("Focus");
-        this.offset = this.focus.FindChild("Offset");
+        this.camera = this.transform.FindChild("Camera");
+        if (focus == null)
+            this.focus = this.transform.FindChild("Focus");
+        this.playerLocalFocus = player.position+focus.position;
+        if (offset == null)
+            this.offset = this.focus.FindChild("Offset");
         this.finalOffset = offset.localPosition;
+        this.anim = this.player.GetComponent<Animator>();
+        anim.speed = 1.2f;
     }
 
     void Update() {
+        this.focus.position = this.player.position + this.playerLocalFocus;
+
         pan += new Vector2(-cameraHorizontalPanSpeed * Input.GetAxis("Mouse X"), cameraVerticalPanSpeed * Input.GetAxis("Mouse Y"));
         if (pan.y < -65)
             pan.y = -65;
@@ -39,12 +56,18 @@ public class PlayerController : MonoBehaviour {
 
         this.focus.transform.rotation = Quaternion.Euler(-pan.y, -pan.x, 0);
 
-        CharacterController controller = GetComponent<CharacterController>();
+        CharacterController controller = this.player.GetComponent<CharacterController>();
+
+        Vector3 inputAxis = new Vector3((!stop)?Input.GetAxis("Horizontal"):0, 0, (!stop)?Input.GetAxis("Vertical"):0);
+
+        if (inputAxis.magnitude > 1) {
+            inputAxis.Normalize();
+        }
 
         if (controller.isGrounded) {
             float rot = this.focus.transform.rotation.eulerAngles.y;
-            Vector3 forward = new Vector3(Mathf.Sin(Mathf.Deg2Rad * rot), 0, Mathf.Cos(Mathf.Deg2Rad * rot)) * Input.GetAxis("Vertical");
-            Vector3 right = -new Vector3(Mathf.Sin(Mathf.Deg2Rad * (rot-90)), 0, Mathf.Cos(Mathf.Deg2Rad * (rot-90))) * Input.GetAxis("Horizontal");
+            Vector3 forward = new Vector3(Mathf.Sin(Mathf.Deg2Rad * rot), 0, Mathf.Cos(Mathf.Deg2Rad * rot)) * inputAxis.z;
+            Vector3 right = -new Vector3(Mathf.Sin(Mathf.Deg2Rad * (rot-90)), 0, Mathf.Cos(Mathf.Deg2Rad * (rot-90))) * inputAxis.x;
 
             moveDirection = forward + right;
 
@@ -52,8 +75,18 @@ public class PlayerController : MonoBehaviour {
             moveDirection *= speed;
             if (Input.GetButton("Jump"))
                 moveDirection.y = jumpSpeed;
+
+            if (Mathf.Abs(inputAxis.x) > 0 || Mathf.Abs(inputAxis.z) > 0) {
+                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                    anim.SetBool("Walking", true);
+            }
+            else {
+                if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+                    anim.SetBool("Walking", false);
+            }
         }
         moveDirection.y -= gravity * Time.deltaTime;
+        player.LookAt(player.position + new Vector3(moveDirection.x, 0, moveDirection.z), Vector3.up);
         controller.Move(moveDirection * Time.deltaTime);
 
         UpdateCamera();
@@ -95,6 +128,14 @@ public class PlayerController : MonoBehaviour {
 
         camera.position = offset.position;
         camera.LookAt(focus);
+    }
+
+    public void StopMovement() {
+        this.stop = true;
+    }
+
+    public void ResumeMovement() {
+        this.stop = false;
     }
 
 }
