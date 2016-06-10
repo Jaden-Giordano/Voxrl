@@ -6,6 +6,8 @@ public class HashArray<T> {
     private Dictionary<int, T> diction;
     private int count;
 
+    public int Count { get { return count; } }
+
     public HashArray() {
         diction = new Dictionary<int, T>();
         count = 0;

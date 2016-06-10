@@ -16,7 +16,7 @@ public class BasicWorldGeneration : GeneratorBase
 
         int tx = x - chunk.cPosition.x, tz = z - chunk.cPosition.z;
 
-        int Height = (int)(heightData[tx, tz]*Chunk.cHeight);
+        int Height = (int)(heightData[tx, tz]*32);
         
         for(int y = 0; y < Chunk.cHeight; y++)
         {

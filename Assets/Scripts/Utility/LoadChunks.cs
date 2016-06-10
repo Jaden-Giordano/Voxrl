@@ -54,14 +54,21 @@ public class LoadChunks : MonoBehaviour
     public int chunkLoadDistance = 2;
     Vector3i objPos = new Vector3i();
 
+    int timer = 0;
+
     private void Update()
     {
-        objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cWidth);
-        objPos.y = 0;
-        objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cWidth);
+        if (timer > 10)
+        {
+            objPos.x = Mathf.FloorToInt(transform.position.x / Chunk.cWidth);
+            objPos.y = 0;
+            objPos.z = Mathf.FloorToInt(transform.position.z / Chunk.cWidth);
 
-        DeleteChunks();
-        LChunks();
+            DeleteChunks();
+            LChunks();
+        }
+        else
+            timer++;
     }
 
     public void DeleteChunks()

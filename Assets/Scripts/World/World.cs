@@ -2,9 +2,58 @@
 using System.Collections;
 using System.Collections.Generic;
 using CielaSpike;
+using LibNoise;
+using LibNoise.Generator;
+using LibNoise.Operator;
 
 public class World : MonoBehaviour
 {
+    public Noise2D wNoise;
+
+    void GenerateNoise()
+    {
+        float baseflatFrequency = 0.1f;
+        float mountainFrequency = 0.2f;
+
+        float flatScale = 0.125f;
+        float flatBias = -0.75f;
+
+        float terraintypeFrequency = 0.5f;
+        float terraintypePersistence = 0.25f;
+
+        float terrainSelectorEdgeFalloff = 0.75f;
+
+        float finalterrainFrequency = 4.0f;
+        float finalterrainPower = 0.125f;
+
+        RidgedMultifractal mountainTerrain = new RidgedMultifractal();
+        mountainTerrain.Frequency = mountainFrequency;
+        mountainTerrain.Seed = World.seed;
+
+        Billow baseFlatTerrain = new Billow();
+        baseFlatTerrain.Frequency = baseflatFrequency;
+        baseFlatTerrain.Seed = World.seed;
+
+        ScaleBias flatTerrain = new ScaleBias(flatScale, flatBias, baseFlatTerrain);
+
+        Perlin terrainType = new Perlin();
+        terrainType.Frequency = terraintypeFrequency;
+        terrainType.Persistence = terraintypePersistence;
+        terrainType.Seed = World.seed;
+
+        Select terrainSelector = new Select(flatTerrain, mountainTerrain, terrainType);
+        terrainSelector.SetBounds(0, 1000);
+        terrainSelector.FallOff = terrainSelectorEdgeFalloff;
+
+        Turbulence finalTerrain = new Turbulence(terrainSelector);
+        finalTerrain.Frequency = finalterrainFrequency;
+        finalTerrain.Power = finalterrainPower;
+
+        ModuleBase myModule;
+        myModule = finalTerrain;
+
+        wNoise = new Noise2D(32, 32, myModule);
+    }
 
     public static int seed = 0;
 
@@ -16,12 +65,16 @@ public class World : MonoBehaviour
     GeneratorBase cGenerator;
     public bool cGenerate = true;
 
+    public Vector3 chunkSpawnPos;
+
     public GameObject chunkPrefab;
 
     public Vector3 worldSize;
 
     void Awake()
     {
+        GenerateNoise();
+
         wChunks = new Dictionary<Vector3i, Chunk>();
 
         cGenerator = new BasicWorldGeneration();
@@ -34,23 +87,16 @@ public class World : MonoBehaviour
     {
         if (cGenerate)
         {
-            /*for (int x = -(int)worldSize.x; x < worldSize.x; x++)
-            {
-                for (int z = -(int)worldSize.z; z < worldSize.z; z++)
-                {
-                    AddChunk(new Vector3i(x, 0, z));
-                }
-            }*/
-            AddChunk(new Vector3i(0, 0, 0));
-            //AddChunk(new Vector3i(1,0,0));
+            cGenerate = false;
+            AddChunk(new Vector3i(chunkSpawnPos));
         }
 
-        StartCoroutine(CreateChunk());
-        StartCoroutine(RemoveChunk());
+        if (cToGenerate.Count > 0) 
+            StartCoroutine(CreateChunk());
+        if (cToRemove.Count > 0) 
+            StartCoroutine(RemoveChunk());
     }
-
-    //Keep this function here, It doesn't work in it's old position below RemoveVoxel
-    //No Idea Why (Fecking Microsoft Sabotage)
+    
     public Voxel GetVoxel(Vector3i pos)
     {
         Chunk tempChunk = GetChunk(pos);
@@ -81,10 +127,10 @@ public class World : MonoBehaviour
         wChunks.TryGetValue(pos, out tempChunk);
         return tempChunk;
     }
-
+    float num;
     public void AddChunk(Vector3i pos)
     {
-        cGenerate = false;
+        num = Time.realtimeSinceStartup;
         Chunk tempChunk = GetChunk(pos);
         if(tempChunk == null)
             cToGenerate.Enqueue(pos);
@@ -147,6 +193,9 @@ public class World : MonoBehaviour
                 this.StartCoroutineAsync(GenerateChunk(tempChunkScript), out GenerationTask);
                 yield return StartCoroutine(GenerationTask.Wait());
                 wChunks.Add(TempPos, tempChunkScript);
+
+                yield return Ninja.JumpToUnity;
+                Logger.Instance.Log(Time.realtimeSinceStartup - num);
             }
         }
         yield break;

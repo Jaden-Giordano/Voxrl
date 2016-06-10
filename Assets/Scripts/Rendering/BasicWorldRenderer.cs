@@ -21,7 +21,7 @@ public class BasicWorldRenderer : RendererBase
     }
     private Voxel data(int x, int y, int z)
     {
-        return chunk.GetVoxel(new Vector3i(x + chunk.cPosition.x, y + chunk.cPosition.y, z + chunk.cPosition.z));
+        return chunk.GetVoxel(new Vector3i(x + chunk.cPosition.x, y, z + chunk.cPosition.z));
     }
 
     private void GreedyMesh(int d, bool back)
@@ -134,7 +134,6 @@ public class BasicWorldRenderer : RendererBase
 
     public void ReduceMesh()
     {
-        meshData.Clear();
         for (bool back = true, b = false; b != back; back = back && b, b = !b)
         {
             for (int i = 0; i < 3; i++)

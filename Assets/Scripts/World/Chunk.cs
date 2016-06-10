@@ -48,8 +48,8 @@ public class Chunk : MonoBehaviour
             cRendered = false;
         }
         if (!cRendered)
-            //Runder();
-            StartCoroutine(Render());
+            Runder();
+            //StartCoroutine(Render());
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
@@ -103,14 +103,16 @@ public class Chunk : MonoBehaviour
     {
         if (cGenerated)
         {
+            float time = Time.realtimeSinceStartup;
             cRendered = true;
             renderer.ReduceMesh();
             Mesh tempMesh = new Mesh();
-            Mesh tempColMesh = new Mesh();
+            //Mesh tempColMesh = new Mesh();
             tempMesh = renderer.ToMesh(tempMesh);
-            tempColMesh = renderer.ToCollisionMesh(tempColMesh);
+            //tempColMesh = renderer.ToCollisionMesh(tempColMesh);
             cFilter.sharedMesh = tempMesh;
-            cColl.sharedMesh = tempColMesh;
+            //cColl.sharedMesh = tempColMesh;
+            Debug.Log("Render " + (Time.realtimeSinceStartup - time));
         }
     }
 

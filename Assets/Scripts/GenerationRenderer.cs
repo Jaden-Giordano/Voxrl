@@ -47,6 +47,7 @@ public class GenerationRenderer : MonoBehaviour {
 
     void Generate()
     {
+        float time = Time.realtimeSinceStartup;
         ModuleBase myModule;
 
         Voronoi biomes = new Voronoi();
@@ -90,5 +91,6 @@ public class GenerationRenderer : MonoBehaviour {
         texture = heightMap.GetTexture(GradientPresets.Grayscale);
         texture.filterMode = FilterMode.Point;
         renderer.material.mainTexture = texture;
+        Logger.Instance.Log("Texture " + (Time.realtimeSinceStartup - time));
     }
 }

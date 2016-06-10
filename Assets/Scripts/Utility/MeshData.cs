@@ -4,107 +4,63 @@ using System.Collections.Generic;
 
 public class MeshData
 {
-    public Dictionary<int, Vector3> vertices = new Dictionary<int, Vector3>();
-    public Dictionary<int, Vector3> colVertices = new Dictionary<int, Vector3>();
-    public Dictionary<int, int> triangles = new Dictionary<int, int>();
-    public Dictionary<int, int> colTriangles = new Dictionary<int, int>();
-    public Dictionary<int, Color32> colors = new Dictionary<int, Color32>();
+    public HashArray<Vector3> vertices = new HashArray<Vector3>();
+    public HashArray<Vector3> colVertices = new HashArray<Vector3>();
+    public HashArray<int> triangles = new HashArray<int>();
+    public HashArray<int> colTriangles = new HashArray<int>();
+    public HashArray<Color32> colors = new HashArray<Color32>();
 
     public MeshData() { }
 
-    public void Clear()
-    {
-        vertices.Clear();
-        triangles.Clear();
-        colors.Clear();
-        colVertices.Clear();
-        colTriangles.Clear();
-    }
-
     public void AddVertex(Vector3 vertex)
     {
-        vertices.Add(vertices.Count, vertex);
+        vertices.Add(vertex);
     }
     
     public void AddColVertex(Vector3 vertex)
     {
-        colVertices.Add(colVertices.Count, vertex);
+        colVertices.Add(vertex);
     }
 
     public void AddTriangle(int tri)
     {
-        triangles.Add(triangles.Count, tri);
+        triangles.Add(tri);
     }
     public void AddColTriangle(int tri)
     {
-        colTriangles.Add(colTriangles.Count, tri);
+        colTriangles.Add(tri);
     }
 
     public void AddColor(Color32 color)
     {
-        colors.Add(colors.Count, color);
-        colors.Add(colors.Count, color);
-        colors.Add(colors.Count, color);
-        colors.Add(colors.Count, color);
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
     }
 
     public Vector3[] VertexArray()
     {
-        Vector3[] tempArray = new Vector3[vertices.Count];
-        int i = 0;
-        foreach (Vector3 key in vertices.Values)
-        {
-            tempArray[i] = key;
-            i++;
-        }
-        return tempArray;
+        return vertices.ToArray();
     }
 
     public int[] TriangleArray()
     {
-        int[] tempArray = new int[triangles.Count];
-        int i = 0;
-        foreach (int value in triangles.Values)
-        {
-            tempArray[i] = value;
-            i++;
-        }
-        return tempArray;
+        return triangles.ToArray();
     }
 
     public Vector3[] ColVertexArray()
     {
-        Vector3[] tempArray = new Vector3[colVertices.Count];
-        int i = 0;
-        foreach (Vector3 key in colVertices.Values)
-        {
-            tempArray[i] = key;
-            i++;
-        }
-        return tempArray;
+        return colVertices.ToArray();
     }
 
     public int[] ColTriangleArray()
     {
-        int[] tempArray = new int[colTriangles.Count];
-        int i = 0;
-        foreach (int value in colTriangles.Values)
-        {
-            tempArray[i] = value;
-            i++;
-        }
-        return tempArray;
+        return colTriangles.ToArray();
     }
 
     public Color32[] ColorArray()
     {
-        Color32[] tempArray = new Color32[colors.Count];
-        int i = 0;
-        foreach (Color32 value in colors.Values)
-        {
-            tempArray[i] = value;
-            i++;
-        }
-        return tempArray;
+        return colors.ToArray();
     }
 }
