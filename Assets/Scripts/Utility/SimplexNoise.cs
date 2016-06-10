@@ -304,5 +304,25 @@ namespace SimplexNoise
             float w = h < 8 ? z : t;
             return ((h & 1) != 0 ? -u : u) + ((h & 2) != 0 ? -v : v) + ((h & 4) != 0 ? -w : w);
         }
+
+        public float FractalBrownian(int octaves, float x, float y, float z)
+        {
+            float lacunarity = 1.9f;
+            float gain = 0.65f;
+
+            float sum = 0;
+            float amplitude = 1f;
+
+            for(int i=0;i<octaves;i++) {
+                sum += amplitude * Generate(x, y, z);
+                amplitude *= gain;
+
+                x *= lacunarity;
+                y *= lacunarity;
+                z *= lacunarity;
+            }
+
+            return sum;
+        }
     }
 }

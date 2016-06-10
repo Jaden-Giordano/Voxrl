@@ -11,8 +11,7 @@ public class Chunk : MonoBehaviour
 {
 
     public Voxel[,,] cVoxels;
-
-    //public Octree<Voxel> cVoxels;
+    
     public static int cWidth = 32;
     public static int cHeight = 12*32;
 
@@ -29,8 +28,6 @@ public class Chunk : MonoBehaviour
 
     private RendererBase renderer;
 
-    public Chunk[] SurroundingChunks = new Chunk[6];
-
     void Awake()
     {
         cFilter = gameObject.GetComponent<MeshFilter>();
@@ -39,19 +36,21 @@ public class Chunk : MonoBehaviour
         renderer = new BasicWorldRenderer();
     }
 
+    void Start()
+    {
+    }
+
     void FixedUpdate()
     {
         if (cDirty)
         {
             cDirty = false;
             cRendered = false;
+            renderer.Initialize(world, this);
         }
         if (!cRendered)
-            StartCoroutine(Render());
-            //Runder();
-
-        //MeshData errors - Duplicate vertex indexes, not sure how that's happening, possibly due to the multithread thing
-        //Without Multithread - Only renders a 32x32x32 instead of a whole chunk (32x384x32)
+            Runder();
+            //StartCoroutine(Render());
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
@@ -74,7 +73,6 @@ public class Chunk : MonoBehaviour
         {
             pos -= cPosition;
             cVoxels[pos.x, pos.y, pos.z] = null;
-            //cVoxels.Remove(pos);
             this.cDirty = true;
         }
         else
@@ -89,7 +87,6 @@ public class Chunk : MonoBehaviour
         {
             pos -= cPosition;
             return cVoxels[pos.x, pos.y, pos.z];
-            //return cVoxels.Get(pos);
         }
         return world.GetVoxel(pos);
     }
@@ -102,17 +99,19 @@ public class Chunk : MonoBehaviour
             return false;
         return true;
     }
+
     void Runder()
     {
         if (cGenerated)
         {
-            renderer.Initialize(world, this);
             cRendered = true;
-            Mesh tempMesh = new Mesh();
             renderer.ReduceMesh();
+            Mesh tempMesh = new Mesh();
+            Mesh tempColMesh = new Mesh();
             tempMesh = renderer.ToMesh(tempMesh);
+            tempColMesh = renderer.ToCollisionMesh(tempColMesh);
             cFilter.sharedMesh = tempMesh;
-            cColl.sharedMesh = tempMesh;
+            cColl.sharedMesh = tempColMesh;
         }
     }
 
@@ -121,16 +120,15 @@ public class Chunk : MonoBehaviour
         Task task;
         if (cGenerated)
         {
-            renderer.Initialize(world, this);
             cRendered = true;
             this.StartCoroutineAsync(ProcessMesh(), out task);
             yield return StartCoroutine(task.Wait());
             Mesh tempMesh = new Mesh();
-            //Mesh tempColMesh = new Mesh();
+            Mesh tempColMesh = new Mesh();
             tempMesh = renderer.ToMesh(tempMesh);
-            //tempColMesh = renderer.ToCollisionMesh(tempColMesh);
+            tempColMesh = renderer.ToCollisionMesh(tempColMesh);
             cFilter.sharedMesh = tempMesh;
-            //cColl.sharedMesh = tempColMesh;
+            cColl.sharedMesh = tempColMesh;
         }
         yield break;
     }

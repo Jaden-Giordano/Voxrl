@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using CielaSpike;
 
 public class BasicWorldRenderer : RendererBase
 {
@@ -26,8 +27,6 @@ public class BasicWorldRenderer : RendererBase
     private void GreedyMesh(int d, bool back)
     {
         int[] Axis = { Chunk.cWidth, Chunk.cHeight, Chunk.cWidth };
-
-        //int CurrentAxis = t;
 
         int i, j, k, l, w, h, u, v, n;
 
@@ -137,18 +136,22 @@ public class BasicWorldRenderer : RendererBase
     {
         meshData.Clear();
         for (bool back = true, b = false; b != back; back = back && b, b = !b)
+        {
             for (int i = 0; i < 3; i++)
+            {
                 GreedyMesh(i, back);
+            }
+        }
     }
 
 
     public Mesh ToMesh(Mesh mesh)
     {
-        /*if (meshData.vertices.Count == 0)
+        if (meshData.vertices.Count == 0)
         {
             GameObject.Destroy(mesh);
             return null;
-        }*/
+        }
 
         if (mesh == null)
             mesh = new Mesh();
@@ -181,19 +184,20 @@ public class BasicWorldRenderer : RendererBase
 
         return mesh;
     }
+
     private void DrawFace(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, Voxel vox)
     {
-        int index = meshData.vertices.Count;
-
         v1 += chunk.cPosition.ToVector3();
         v2 += chunk.cPosition.ToVector3();
         v3 += chunk.cPosition.ToVector3();
         v4 += chunk.cPosition.ToVector3();
 
-        /*Logger.Instance.Log(v1.ToString());
-        Logger.Instance.Log(v2.ToString());
-        Logger.Instance.Log(v3.ToString());
-        Logger.Instance.Log(v4.ToString());*/
+        v1 *= Voxel.vSize;
+        v2 *= Voxel.vSize;
+        v3 *= Voxel.vSize;
+        v4 *= Voxel.vSize;
+
+        int index = meshData.vertices.Count;
 
         meshData.AddVertex(v1);
         meshData.AddVertex(v2);
@@ -210,7 +214,7 @@ public class BasicWorldRenderer : RendererBase
 
         meshData.AddColor(vox.vColor);
 
-        /*if (vox.vColor.a > 0.9)
+        if (vox.vColor.a > 0.9)
         {
             int cIndex = meshData.colVertices.Count;
             meshData.AddColVertex(v1);
@@ -225,7 +229,7 @@ public class BasicWorldRenderer : RendererBase
             meshData.AddColTriangle(cIndex);
             meshData.AddColTriangle(cIndex + 2);
             meshData.AddColTriangle(cIndex + 3);
-        }*/
+        }
 
     }
 }

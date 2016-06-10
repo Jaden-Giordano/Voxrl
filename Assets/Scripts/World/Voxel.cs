@@ -7,7 +7,7 @@ public class Voxel {
 
     public float vViscocity = 1f;
 
-	public static float vSize = .5f;
+	public static float vSize = 0.5f;
 
     public override bool Equals(object obj)
     {

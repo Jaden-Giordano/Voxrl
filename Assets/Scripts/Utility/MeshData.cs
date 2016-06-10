@@ -6,13 +6,9 @@ public class MeshData
 {
     public Dictionary<int, Vector3> vertices = new Dictionary<int, Vector3>();
     public Dictionary<int, Vector3> colVertices = new Dictionary<int, Vector3>();
-
     public Dictionary<int, int> triangles = new Dictionary<int, int>();
     public Dictionary<int, int> colTriangles = new Dictionary<int, int>();
-
     public Dictionary<int, Color32> colors = new Dictionary<int, Color32>();
-
-    public bool useRenderDataForCol = false;
 
     public MeshData() { }
 
@@ -56,21 +52,9 @@ public class MeshData
     {
         Vector3[] tempArray = new Vector3[vertices.Count];
         int i = 0;
-        foreach (Vector3 value in vertices.Values)
+        foreach (Vector3 key in vertices.Values)
         {
-            tempArray[i] = value;
-            i++;
-        }
-        return tempArray;
-    }
-
-    public Vector3[] ColVertexArray()
-    {
-        Vector3[] tempArray = new Vector3[colVertices.Count];
-        int i = 0;
-        foreach (Vector3 value in colVertices.Values)
-        {
-            tempArray[i] = value;
+            tempArray[i] = key;
             i++;
         }
         return tempArray;
@@ -83,6 +67,18 @@ public class MeshData
         foreach (int value in triangles.Values)
         {
             tempArray[i] = value;
+            i++;
+        }
+        return tempArray;
+    }
+
+    public Vector3[] ColVertexArray()
+    {
+        Vector3[] tempArray = new Vector3[colVertices.Count];
+        int i = 0;
+        foreach (Vector3 key in colVertices.Values)
+        {
+            tempArray[i] = key;
             i++;
         }
         return tempArray;

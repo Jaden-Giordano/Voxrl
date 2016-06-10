@@ -67,21 +67,15 @@ public class LoadChunks : MonoBehaviour
     public void DeleteChunks()
     {
         cToDelete = new HashSet<Vector3i>();
-
-
-
         foreach (Vector3i cPos in loadedChunks)
         {
-            for (int y = -6; y < 6; y++)
+            if (Mathf.Pow(cPos.x - objPos.x, 2) + Mathf.Pow(cPos.z - objPos.z, 2) > chunkLoadDistance)
             {
-                if (Mathf.Pow(cPos.x, 2) + Mathf.Pow(cPos.x, 2) > chunkLoadDistance)
-                {
-                    //cToDelete.Add(new Vector3i(cPos.x, y, cPos.z));
-                }
+                cToDelete.Add(cPos);
             }
         }
 
-        foreach(Vector3i cPos in cToDelete)
+        foreach (Vector3i cPos in cToDelete)
         {
             loadedChunks.Remove(cPos);
             world.DestroyChunk(cPos);
@@ -90,28 +84,19 @@ public class LoadChunks : MonoBehaviour
 
     public void LChunks()
     {
-
-        for(int i=0;i<chunkPositions.Length;i++)
+        for (int i = 0; i < chunkPositions.Length; i++)
         {
             Vector3i Pos = chunkPositions[i];
-            for (int y = -6; y < 6; y++) 
+            Vector3i cPos = Pos + objPos;
+
+            if (Mathf.Pow(Pos.x, 2) + Mathf.Pow(Pos.z, 2) < chunkLoadDistance)
             {
-                objPos.y = y;
-                Vector3i cPos = Pos + objPos;
-                if (Mathf.Pow(Pos.x, 2) + Mathf.Pow(Pos.z, 2) < chunkLoadDistance)
+                if (world.GetChunk(cPos) == null && !loadedChunks.Contains(cPos))
                 {
-                    if (world.GetChunk(cPos) == null)
-                    {
-                        if(!loadedChunks.Contains(new Vector3i(cPos.x, 0, cPos.z)))
-                            loadedChunks.Add(new Vector3i(cPos.x, 0, cPos.z));
-                        world.AddChunk(cPos);
-                    }
-                }else
-                {
-                    break;
+                    loadedChunks.Add(cPos);
+                    world.AddChunk(cPos);
                 }
             }
         }
     }
-
 }

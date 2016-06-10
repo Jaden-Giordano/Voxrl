@@ -1,6 +1,7 @@
 ﻿// Upgrade NOTE: replaced 'SeperateSpecular' with 'SeparateSpecular'
 
 Shader "Vertex Color Lit" {
+	Properties { _LightColor ("Light Color", Color) = (0,0,0,1)}
 
 		SubShader{
 		Pass{
@@ -13,7 +14,7 @@ Shader "Vertex Color Lit" {
 				#include "UnityCG.cginc"
 
 				uniform half4 _Color;
-				uniform float4 _LightColor0;
+				uniform float4 _LightColor;
 
 				struct vertInput
 				{
@@ -39,7 +40,7 @@ Shader "Vertex Color Lit" {
 					float3 NdotL = max(0.0, dot(n, l));
 					float3 a = UNITY_LIGHTMODEL_AMBIENT * input.color;
 
-					float3 d = NdotL * _LightColor0 * input.color;
+					float3 d = NdotL * _LightColor * input.color;
 					float4 c = float4(d + a, input.color.a);
 
 					o.pos = mul(UNITY_MATRIX_MVP, input.pos);
