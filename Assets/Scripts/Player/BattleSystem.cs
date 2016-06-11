@@ -3,17 +3,11 @@ using System.Collections.Generic;
 
 public class BattleSystem : MonoBehaviour {
 
-    public Ability[] abilities;
-
-    public Stats stats;
-
     public List<Status> currentStatus = new List<Status>();
 
     public Entity owner;
 
     protected virtual void Start() {
-        abilities = new Ability[6];
-        stats = GetComponent<Stats>();
         owner = GetComponent<Entity>();
     }
     
@@ -27,22 +21,16 @@ public class BattleSystem : MonoBehaviour {
         foreach (Status i in rmvQueue) {
             currentStatus.Remove(i);
         }
-
-        foreach (Ability a in abilities) {
-            if (a != null)
-                a.Update();
-        }
     }
 
-    protected virtual void UseAbility(int index) {
-        Ability a = abilities[index];
+    public virtual void UseAbility(int index) {
+        Ability a = owner.testWeapon.GetAbilities()[index];
         if (a != null) {
             if (a.available) {
                 Logger.Instance.Log("Used Ability " + index);
-
-                Effect[] efs = owner.ApplyInventoryStats(a.GenerateEffects());
+                Effect[] efs = owner.ApplyModifiedStats(a.GenerateEffects());
                 if (index == 0)
-                    owner.RegularAttack();
+                    owner.Animate(index);
 
                 if (a.selfAfflict)
                     this.Effected(efs);
@@ -62,16 +50,7 @@ public class BattleSystem : MonoBehaviour {
     }
 
     public virtual void Effected(Effect[] effects) {
-        foreach (Effect i in effects) {
-            if (i.statsBased)
-                stats.ApplyEffect(i);
-            if (i.transformBased) {
-                i.ApplyEffect(this.transform);
-            }
-            if (i.invokesStatus) {
-                this.InvokeStatus(i.status);
-            }
-        }
+        this.owner.Effected(effects);
     }
 
     public virtual void InvokeStatus(Status s) {
@@ -88,7 +67,7 @@ public class BattleSystem : MonoBehaviour {
     }
 
     public virtual void AwardKill(int exp) {
-        this.stats.experience += exp;
+        this.owner.baseStats.GiveExp(exp);
     }
 
 }

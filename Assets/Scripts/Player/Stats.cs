@@ -1,6 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
+public class ModifiedStats {
+    public float maxHealth;
+    public float damage;
+    public float speed;
+    public float maxMana;
+    public float damageReduce;
+
+    public ModifiedStats() {
+        maxHealth = 0;
+        damage = 0;
+        speed = 0;
+        maxMana = 0;
+        damageReduce = 0;
+    }
+
+    public ModifiedStats(float mH, float mM, float s, float d, float dR) {
+        this.maxHealth = mH;
+        this.maxMana = mM;
+        this.damage = d;
+        this.damageReduce = dR;
+        this.speed = s;
+    }
+
+    public static ModifiedStats operator +(ModifiedStats a, ModifiedStats b) {
+        return new ModifiedStats(a.maxHealth + b.maxHealth, a.maxMana + b.maxMana, a.speed + b.speed, a.damage + b.damage, a.damageReduce + b.damageReduce);
+    }
+}
+
 public class Stats : MonoBehaviour {
 
     public enum SkillType {
@@ -37,6 +66,9 @@ public class Stats : MonoBehaviour {
     public float damage {
         get { return (15 * (Mathf.Pow(1.02f, Level))) * (1 + (Strength / 40)); }
     }
+    public float damageReduce {
+        get { return (10 * (Mathf.Pow(1.02f, Level))) * (1 + (Defense / 20)); }
+    }
 
     public bool alive = true;
 
@@ -53,6 +85,8 @@ public class Stats : MonoBehaviour {
     private int lastLevel = 0;
 
 	protected virtual void Start () {
+        this.health = maxHealth;
+        this.mana = maxMana;
 	}
 
 	protected virtual void FixedUpdate () {
@@ -67,9 +101,13 @@ public class Stats : MonoBehaviour {
         this.mana += e.statsEffected.mana;
 
         if (this.health <= 0) {
-            e.owner.AwardKill(AwardExp);
+            e.owner.battleSystem.AwardKill(AwardExp);
             alive = false;
         }
+    }
+
+    public virtual void GiveExp(int exp) {
+        this.experience += exp;
     }
 
     public virtual void SpendSkillPoints(SkillType t, int amt) {

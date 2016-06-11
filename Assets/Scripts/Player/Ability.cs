@@ -30,12 +30,13 @@ public abstract class Ability {
     // gets area in front of player, in degrees rotation
     public Vector3i aoe = Vector3i.zero;
 
-    protected BattleSystem owner;
+    protected Weapon owner;
 
     public string name = "Ability";
 
-    public Ability(BattleSystem owner) {
+    public Ability(Weapon owner) {
         effects = new List<Effect>();
+        this.owner = owner;
     }
 
     public void AddEffect(Effect e) {

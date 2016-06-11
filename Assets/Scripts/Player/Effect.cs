@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public abstract class Effect {
+[System.Serializable]
+public class StatsEffect {
+    public float health;
+    public float mana;
+    public float speed;
 
-    public struct StatsEffect {
-        public float health;
-        public float mana;
-        public float speed;
-
-        public StatsEffect(float h, float m, float speed) {
-            this.health = h;
-            this.mana = m;
-            this.speed = speed;
-        }
+    public StatsEffect(float h, float m, float speed) {
+        this.health = h;
+        this.mana = m;
+        this.speed = speed;
     }
+}
+
+public abstract class Effect {
 
     #region Base Types
 
@@ -51,11 +52,11 @@ public abstract class Effect {
 
     #endregion
 
-    public BattleSystem owner;
+    public Entity owner;
 
     public float probability = 0;
 
-    public Effect(BattleSystem owner) {
+    public Effect(Entity owner) {
         this.owner = owner;
     }
 

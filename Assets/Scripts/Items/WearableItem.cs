@@ -1,19 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class WearableItem : Item {
+public class WearableItem : ModifiedStatsItem { // TODO Add weight so it can only be carried with a certain amount of strength
 
-    protected ItemStats _itemStats;
-
-    public Vector3 localPosition;
-
-    public ItemStats itemStats {
-        get { return _itemStats; }
-        protected set { _itemStats = value; }
-    }
+    public Vector3 localPos;
 
     public WearableItem(Entity owner) : base(owner) {
-        itemStats = new ItemStats();
+
     }
 
 }

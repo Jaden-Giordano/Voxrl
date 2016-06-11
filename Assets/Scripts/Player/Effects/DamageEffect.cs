@@ -12,7 +12,7 @@ public class DamageEffect : Effect {
         }
     }
 
-	public DamageEffect(BattleSystem owner, float probability, float damage) : base(owner) {
+	public DamageEffect(Entity owner, float probability, float damage) : base(owner) {
         this.probability = probability;
         this._statsBased = true;
         this.damage = damage;

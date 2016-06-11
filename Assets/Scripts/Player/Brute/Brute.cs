@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Brute_BattleSystem : BattleSystem {
+public class Brute : Entity {
 
 	protected override void Start() {
         base.Start();
 
-        this.stats = new BruteStats();
-
-        this.abilities[0] = new BashAbility(this);
+        this.baseStats = new BruteStats();
     }
 
     protected override void Update() {
         base.Update();
 
         if (Input.GetMouseButton(0)) {
-            this.UseAbility(0);
+            this.battleSystem.UseAbility(0);
         }
     }
 
