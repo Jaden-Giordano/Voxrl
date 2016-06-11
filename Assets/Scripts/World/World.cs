@@ -16,12 +16,12 @@ public class World : MonoBehaviour
         float mountainFrequency = 0.2f;
 
         float flatScale = 0.125f;
-        float flatBias = -0.75f;
+        float flatBias = 0f;
 
         float terraintypeFrequency = 0.5f;
         float terraintypePersistence = 0.25f;
 
-        float terrainSelectorEdgeFalloff = 0.75f;
+        float terrainSelectorEdgeFalloff = 0.9f;
 
         float finalterrainFrequency = 4.0f;
         float finalterrainPower = 0.125f;
@@ -56,7 +56,7 @@ public class World : MonoBehaviour
     }
 
     public static int seed = 0;
-
+    
     public Dictionary<Vector3i, Chunk> wChunks;
     
     private Queue<Vector3i> cToGenerate = new Queue<Vector3i>();
@@ -88,7 +88,11 @@ public class World : MonoBehaviour
         if (cGenerate)
         {
             cGenerate = false;
-            AddChunk(new Vector3i(chunkSpawnPos));
+
+            for(int x=0;x<chunkSpawnPos.x;x++)
+                for(int z=0;z<chunkSpawnPos.z;z++)
+                    for (int y = 0; y < chunkSpawnPos.y; y++)
+                        AddChunk(new Vector3i(x,y,z));
         }
 
         if (cToGenerate.Count > 0) 
@@ -195,7 +199,7 @@ public class World : MonoBehaviour
                 wChunks.Add(TempPos, tempChunkScript);
 
                 yield return Ninja.JumpToUnity;
-                Logger.Instance.Log(Time.realtimeSinceStartup - num);
+                //Logger.Instance.Log(Time.realtimeSinceStartup - num);
             }
         }
         yield break;

@@ -12,6 +12,15 @@ public class MeshData
 
     public MeshData() { }
 
+    public void Clear()
+    {
+        vertices.Clear();
+        colVertices.Clear();
+        triangles.Clear();
+        colTriangles.Clear();
+        colors.Clear();
+    }
+
     public void AddVertex(Vector3 vertex)
     {
         vertices.Add(vertex);

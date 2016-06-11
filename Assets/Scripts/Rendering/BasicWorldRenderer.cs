@@ -21,12 +21,12 @@ public class BasicWorldRenderer : RendererBase
     }
     private Voxel data(int x, int y, int z)
     {
-        return chunk.GetVoxel(new Vector3i(x + chunk.cPosition.x, y, z + chunk.cPosition.z));
+        return chunk.GetVoxel(new Vector3i(x + chunk.cPosition.x, y + chunk.cPosition.y, z + chunk.cPosition.z));
     }
 
     private void GreedyMesh(int d, bool back)
     {
-        int[] Axis = { Chunk.cWidth, Chunk.cHeight, Chunk.cWidth };
+        int[] Axis = { Chunk.cWidth, Chunk.cWidth + 1, Chunk.cWidth };
 
         int i, j, k, l, w, h, u, v, n;
 
@@ -43,23 +43,20 @@ public class BasicWorldRenderer : RendererBase
 
         q[d] = 1;
 
-        Voxel[] mask = new Voxel[Axis[v] * Axis[u]];
 
         //Mask Generation
-        for (x[d] = -1; x[d] < Axis[d];)
+        for (x[d] = 0; x[d] < Axis[d];)
         {
             n = 0;
 
+            Voxel[] mask = new Voxel[Axis[v] * Axis[u]];
             for (x[v] = 0; x[v] < Axis[v]; x[v]++)
             {
                 for (x[u] = 0; x[u] < Axis[u]; x[u]++)
                 {
                     if (x[d] >= 0) vox = data(x[0], x[1], x[2]);
                     if (x[d] < Axis[d] - 1) vox1 = data(x[0] + q[0], x[1] + q[1], x[2] + q[2]);
-
                     mask[n++] = ((vox != null && vox1 != null && vox.Equals(vox1))) ? null : back ? vox1 : vox;
-
-
                 }
             }
 
@@ -127,13 +124,14 @@ public class BasicWorldRenderer : RendererBase
                         n++;
                     }
                 }
-
             }
+
         }
     }
 
     public void ReduceMesh()
     {
+        float time = Time.realtimeSinceStartup;
         for (bool back = true, b = false; b != back; back = back && b, b = !b)
         {
             for (int i = 0; i < 3; i++)
@@ -141,6 +139,7 @@ public class BasicWorldRenderer : RendererBase
                 GreedyMesh(i, back);
             }
         }
+        //Logger.Instance.Log("Reduce Mesh" + (Time.realtimeSinceStartup - time));
     }
 
 
@@ -160,7 +159,6 @@ public class BasicWorldRenderer : RendererBase
         mesh.triangles = meshData.TriangleArray();
 
         mesh.RecalculateNormals();
-
         return mesh;
     }
 
