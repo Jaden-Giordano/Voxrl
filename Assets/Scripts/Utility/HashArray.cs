@@ -16,10 +16,6 @@ public class HashArray<T> {
     public void Add(T value) {
         diction.Add(count++, value);
     }
-    public void Clear()
-    {
-        diction.Clear();
-    }
 
     public T Get(int index) {
         T v;

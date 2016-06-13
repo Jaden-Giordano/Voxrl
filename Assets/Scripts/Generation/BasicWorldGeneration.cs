@@ -11,26 +11,25 @@ public class BasicWorldGeneration : GeneratorBase
 
     public override void GenerateColumn(int x, int z, Noise2D noise)
     {
+
         float[,] heightData = noise.GetNormalizedData();
 
         int tx = x - chunk.cPosition.x, tz = z - chunk.cPosition.z;
 
-        int Height = (int)(heightData[tx, tz]*320);
+        int Height = (int)(heightData[tx, tz]*32);
         
-        for(int y = chunk.cPosition.y; y < chunk.cPosition.y + Chunk.cWidth; y++)
+        for(int y = 0; y < Chunk.cHeight; y++)
         {
             Voxel tVox = new Voxel();
             if (y == Height)
             {
                 tVox.vColor = Color.green;
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
-                n++;
             }
             if(y < Height)
             {
                 tVox.vColor = Color.gray;
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
-                n++;
             }
         }
     }

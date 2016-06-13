@@ -11,16 +11,14 @@ public class Chunk : MonoBehaviour
 {
 
     public Voxel[,,] cVoxels;
-
+    
     public static int cWidth = 32;
-    public static int cHeight = 12 * 32;
-
-    public bool filled = false;
+    public static int cHeight = 12*32;
 
     private MeshFilter cFilter;
     private MeshCollider cColl;
 
-    public bool cDirty = false;
+    public bool cDirty = true;
 
     public World world;
     public Vector3i cPosition;
@@ -38,7 +36,7 @@ public class Chunk : MonoBehaviour
         renderer = new BasicWorldRenderer();
     }
     void Start()
-    {
+    { 
         renderer.Initialize(world, this);
     }
 
@@ -49,9 +47,9 @@ public class Chunk : MonoBehaviour
             cDirty = false;
             cRendered = false;
         }
-        if (!cRendered && cGenerated && !filled)
+        if (!cRendered)
             Runder();
-        //StartCoroutine(Render());
+            //StartCoroutine(Render());
     }
 
     public void SetVoxel(Vector3i pos, Voxel vox)
@@ -60,7 +58,7 @@ public class Chunk : MonoBehaviour
         {
             pos -= cPosition;
             cVoxels[pos.x, pos.y, pos.z] = vox;
-            //this.cDirty = true;
+            this.cDirty = true;
         }
         else
         {
@@ -74,7 +72,7 @@ public class Chunk : MonoBehaviour
         {
             pos -= cPosition;
             cVoxels[pos.x, pos.y, pos.z] = null;
-            //this.cDirty = true;
+            this.cDirty = true;
         }
         else
         {
@@ -96,8 +94,6 @@ public class Chunk : MonoBehaviour
     {
         if (pos.x < cPosition.x || pos.x >= cPosition.x + Chunk.cWidth)
             return false;
-        if (pos.y < cPosition.y || pos.y >= cPosition.y + Chunk.cWidth)
-            return false;
         if (pos.z < cPosition.z || pos.z >= cPosition.z + Chunk.cWidth)
             return false;
         return true;
@@ -105,16 +101,19 @@ public class Chunk : MonoBehaviour
 
     void Runder()
     {
-        float time = Time.realtimeSinceStartup;
-        cRendered = true;
-        renderer.ReduceMesh();
-        Mesh tempMesh = new Mesh();
-        Mesh tempColMesh = new Mesh();
-        tempMesh = renderer.ToMesh(tempMesh);
-        tempColMesh = renderer.ToCollisionMesh(tempColMesh);
-        cFilter.sharedMesh = tempMesh;
-        cColl.sharedMesh = tempColMesh;
-        //Debug.Log("Render " + (Time.realtimeSinceStartup - time));
+        if (cGenerated)
+        {
+            float time = Time.realtimeSinceStartup;
+            cRendered = true;
+            renderer.ReduceMesh();
+            Mesh tempMesh = new Mesh();
+            //Mesh tempColMesh = new Mesh();
+            tempMesh = renderer.ToMesh(tempMesh);
+            //tempColMesh = renderer.ToCollisionMesh(tempColMesh);
+            cFilter.sharedMesh = tempMesh;
+            //cColl.sharedMesh = tempColMesh;
+            Debug.Log("Render " + (Time.realtimeSinceStartup - time));
+        }
     }
 
     IEnumerator Render()

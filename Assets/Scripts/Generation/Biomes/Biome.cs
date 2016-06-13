@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [System.Serializable]
-public struct Biome
+public class Biome
 {
     public string Name;
     public Color32[] vTypes;
@@ -10,5 +10,6 @@ public struct Biome
     public float Scale;
 
     public Vector2 TempHumidPoint;
-    
+
+    public Biome() { }
 }

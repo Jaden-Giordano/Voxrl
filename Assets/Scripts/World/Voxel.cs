@@ -3,16 +3,9 @@ using System.Collections;
 
 public class Voxel {
 
-    public Voxel() { }
+	public Color32 vColor = Color.white;
 
-    public Voxel(Color32 color)
-    {
-        vColor = color;
-    }
-
-	public Color32 vColor;
-
-    public float vViscocity;
+    public float vViscocity = 1f;
 
 	public static float vSize = 0.5f;
 
