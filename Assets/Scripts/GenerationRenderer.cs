@@ -6,7 +6,7 @@ using LibNoise.Operator;
 
 
 public class GenerationRenderer : MonoBehaviour {
-
+    
     public Renderer renderer;
     private Texture texture;
 
@@ -18,28 +18,26 @@ public class GenerationRenderer : MonoBehaviour {
     public float offsetX = 0;
     public float offsetZ = 0;
 
-    float baseflatFrequency = 0.1f;
-    float mountainFrequency = 0.2f;
+    public float baseflatFrequency = 0.1f;
+    public float mountainFrequency = 0.2f;
 
-    float flatScale = 0.125f;
-    float flatBias = 0f;
+    public float flatScale = 0.125f;
+    public float flatBias = 0f;
 
-    float terraintypeFrequency = 0.5f;
-    float terraintypePersistence = 0.25f;
+    public float terraintypeFrequency = 0.5f;
+    public float terraintypePersistence = 0.25f;
 
-    float terrainSelectorEdgeFalloff = 0.75f;
+    public float terrainSelectorEdgeFalloff = 0.75f;
 
-    float finalterrainFrequency = 4.0f;
-    float finalterrainPower = 0.125f;
+    public float finalterrainFrequency = 4.0f;
+    public float finalterrainPower = 0.125f;
 
     
-
-	// Use this for initialization
+    
 	void Start () {
-        Generate();
+        //Generate();
 	}
 	
-	// Update is called once per frame
 	void Update () {
         if (Input.GetMouseButtonUp(0))
             Generate();
@@ -52,45 +50,47 @@ public class GenerationRenderer : MonoBehaviour {
 
         Voronoi biomes = new Voronoi();
         biomes.Seed = (int)System.DateTime.Now.Ticks;
+        biomes.Frequency = 0.1;
 
         #region LandScape Generation
         RidgedMultifractal mountainTerrain = new RidgedMultifractal();
         mountainTerrain.Frequency = mountainFrequency;
-        mountainTerrain.Seed = (int)System.DateTime.Now.Ticks;
+        mountainTerrain.Seed = World.seed;
 
         Billow baseFlatTerrain = new Billow();
         baseFlatTerrain.Frequency = baseflatFrequency;
+        baseFlatTerrain.Seed = World.seed;
 
         ScaleBias flatTerrain = new ScaleBias(flatScale, flatBias, baseFlatTerrain);
 
         Perlin terrainType = new Perlin();
         terrainType.Frequency = terraintypeFrequency;
         terrainType.Persistence = terraintypePersistence;
-        terrainType.Seed = (int)System.DateTime.Now.Ticks;
+        terrainType.Seed = World.seed;
 
         Select terrainSelector = new Select(flatTerrain, mountainTerrain, terrainType);
         terrainSelector.SetBounds(0, 1000);
         terrainSelector.FallOff = terrainSelectorEdgeFalloff;
+
 
         Turbulence finalTerrain = new Turbulence(terrainSelector);
         finalTerrain.Frequency = finalterrainFrequency;
         finalTerrain.Power = finalterrainPower;
 
         #endregion
-        myModule = finalTerrain;
+        myModule = terrainType;
 
         Noise2D heightMap = new Noise2D(SizeX, SizeZ, myModule);
 
-        heightMap.GeneratePlanar(
+        Biomes.Instance.biomes[0].noise2D.GeneratePlanar(
                 offsetX,
                 offsetX + sampleSizeX,
                 offsetZ,
                 offsetZ + sampleSizeZ
                 );
 
-        texture = heightMap.GetTexture(GradientPresets.Grayscale);
+        texture = Biomes.Instance.biomes[0].noise2D.GetTexture(GradientPresets.Grayscale);
         texture.filterMode = FilterMode.Point;
         renderer.material.mainTexture = texture;
-        Logger.Instance.Log("Texture " + (Time.realtimeSinceStartup - time));
     }
 }

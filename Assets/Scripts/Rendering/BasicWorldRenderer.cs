@@ -24,7 +24,175 @@ public class BasicWorldRenderer : RendererBase
         return chunk.GetVoxel(new Vector3i(x + chunk.cPosition.x, y, z + chunk.cPosition.z));
     }
 
-    private void GreedyMesh(int d, bool back)
+    private void GreedyMesh(int d)
+    {
+        int[] Axis = { Chunk.cWidth, Chunk.cHeight, Chunk.cWidth};
+
+        int i, j, k, l, w, h, u, v, n;
+
+        int[] x = new int[3];
+        int[] q = new int[3];
+        int[] du = new int[3];
+        int[] dv = new int[3];
+
+        Voxel vox = null;
+        Voxel vox1 = null;
+
+        u = (d + 1) % 3;
+        v = (d + 2) % 3;
+
+        q[d] = 1;
+
+        Voxel[] mask = new Voxel[Axis[v] * Axis[u]];
+        bool[] b = new bool[Axis[v] * Axis[u]];
+
+        //Mask Generation
+        for (x[d] = -1; x[d] < Axis[d];)
+        {
+            n = 0;
+
+            for (x[v] = 0; x[v] < Axis[v]; x[v]++)
+            {
+                for (x[u] = 0; x[u] < Axis[u]; x[u]++)
+                {
+                    if (x[d] >= 0) vox = data(x[0], x[1], x[2]);
+                    if (x[d] < Axis[d] - 1) vox1 = data(x[0] + q[0], x[1] + q[1], x[2] + q[2]);
+
+                    switch(d)
+                    {
+                        case 0:
+                            if (vox != null && vox1 != null)
+                            {
+                                if (vox.Equals(vox1))
+                                    mask[n] = null;
+                                else
+                                    mask[n] = vox;
+                            }
+                            else if (vox != null)
+                            {
+                                mask[n] = vox;
+                                b[n] = false;
+                            }
+                            else
+                            {
+                                mask[n] = vox1;
+                                b[n] = true;
+                            }
+                            break;  
+                        case 1:
+                            if (vox != null && vox1 != null)
+                            {
+                                if (vox.Equals(vox1))
+                                    mask[n] = null;
+                            }
+                            else if (vox != null)
+                            {
+                                mask[n] = vox;
+                                b[n] = false;
+                            }
+                            else
+                            {
+                                mask[n] = vox1;
+                                b[n] = true;
+                            }
+                            break;
+                        case 2:
+                            if (vox != null && vox1 != null)
+                            {
+                                if (vox.Equals(vox1))
+                                    mask[n] = null;
+                                else
+                                    mask[n] = vox;
+                            }
+                            else if (vox != null)
+                            {
+                                mask[n] = vox;
+                                b[n] = false;
+                            }
+                            else
+                            {
+                                mask[n] = vox1;
+                                b[n] = true;
+                            }
+                            break;
+                    }
+
+                    n++;
+
+
+                }
+            }
+
+            x[d]++;
+
+
+
+            //Mesh Generation
+            n = 0;
+
+            for (j = 0; j < Axis[v]; j++)
+            {
+                for (i = 0; i < Axis[u];)
+                {
+                    if (mask[n] != null)
+                    {
+                        for (w = 1; i + w < Axis[u] && mask[n + w] != null && mask[n + w].Equals(mask[n]); w++) { }
+
+                        bool done = false;
+                        for (h = 1; j + h < Axis[v]; h++)
+                        {
+                            for (k = 0; k < w; k++)
+                            {
+                                if (mask[n + k + h * Axis[u]] == null || !mask[n + k + h * Axis[u]].Equals(mask[n]))
+                                {
+                                    done = true;
+                                    break;
+                                }
+                            }
+                            if (done) break;
+                        }
+
+                        x[u] = i;
+                        x[v] = j;
+
+                        du[u] = w;
+                        dv[v] = h;
+
+                        Vector3[] v1 = {
+                                new Vector3(x[0], x[1], x[2]),
+                                new Vector3(x[0] + du[0], x[1] + du[1], x[2] + du[2]),
+                                new Vector3(x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2] + du[2] + dv[2]),
+                                new Vector3(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2])
+                            };
+
+                        if (b[n])
+                            DrawFace(v1[3], v1[2], v1[1], v1[0], mask[n]);
+                        else
+                            DrawFace(v1[0], v1[1], v1[2], v1[3], mask[n]);
+
+
+                        for (l = 0; l < h; l++)
+                        {
+                            for (k = 0; k < w; k++)
+                            {
+                                mask[n + k + l * Axis[u]] = null;
+                            }
+                        }
+                        i += w;
+                        n += w;
+                    }
+                    else
+                    {
+                        i++;
+                        n++;
+                    }
+                }
+
+            }
+        }
+    }
+
+    private void OldGreedyMesh(int d, bool back)
     {
         int[] Axis = { Chunk.cWidth, Chunk.cHeight, Chunk.cWidth };
 
@@ -44,6 +212,7 @@ public class BasicWorldRenderer : RendererBase
         q[d] = 1;
 
         Voxel[] mask = new Voxel[Axis[v] * Axis[u]];
+        bool[] b = new bool[Axis[v] * Axis[u]];
 
         //Mask Generation
         for (x[d] = -1; x[d] < Axis[d];)
@@ -56,7 +225,7 @@ public class BasicWorldRenderer : RendererBase
                 {
                     if (x[d] >= 0) vox = data(x[0], x[1], x[2]);
                     if (x[d] < Axis[d] - 1) vox1 = data(x[0] + q[0], x[1] + q[1], x[2] + q[2]);
-
+                    
                     mask[n++] = ((vox != null && vox1 != null && vox.Equals(vox1))) ? null : back ? vox1 : vox;
 
 
@@ -65,12 +234,10 @@ public class BasicWorldRenderer : RendererBase
 
             x[d]++;
 
-
-
             //Mesh Generation
             n = 0;
 
-            for (j = 0; j < Axis[v]; ++j)
+            for (j = 0; j < Axis[v]; j++)
             {
                 for (i = 0; i < Axis[u];)
                 {
@@ -111,9 +278,9 @@ public class BasicWorldRenderer : RendererBase
                             DrawFace(v1[0], v1[1], v1[2], v1[3], mask[n]);
 
 
-                        for (l = 0; l < h; ++l)
+                        for (l = 0; l < h; l++)
                         {
-                            for (k = 0; k < w; ++k)
+                            for (k = 0; k < w; k++)
                             {
                                 mask[n + k + l * Axis[u]] = null;
                             }
@@ -134,11 +301,16 @@ public class BasicWorldRenderer : RendererBase
 
     public void ReduceMesh()
     {
+        /*for (int i = 0; i < 3; i++)
+        {
+            GreedyMesh(i);
+        }*/
+
         for (bool back = true, b = false; b != back; back = back && b, b = !b)
         {
             for (int i = 0; i < 3; i++)
             {
-                GreedyMesh(i, back);
+                OldGreedyMesh(i, back);
             }
         }
     }

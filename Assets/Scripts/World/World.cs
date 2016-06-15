@@ -10,13 +10,14 @@ public class World : MonoBehaviour
 {
     public Noise2D wNoise;
 
+    #region Noise Generation
     void GenerateNoise()
     {
         float baseflatFrequency = 0.1f;
         float mountainFrequency = 0.2f;
 
         float flatScale = 0.125f;
-        float flatBias = -0.75f;
+        float flatBias = 0;
 
         float terraintypeFrequency = 0.5f;
         float terraintypePersistence = 0.25f;
@@ -50,10 +51,11 @@ public class World : MonoBehaviour
         finalTerrain.Power = finalterrainPower;
 
         ModuleBase myModule;
-        myModule = finalTerrain;
+        myModule = terrainSelector;
 
         wNoise = new Noise2D(32, 32, myModule);
     }
+    #endregion
 
     public static int seed = 0;
 
@@ -121,16 +123,17 @@ public class World : MonoBehaviour
 
     public Chunk GetChunk(Vector3i pos)
     {
-        pos = (pos / Chunk.cWidth) * Chunk.cWidth;
-        
+        pos.x = (pos.x / Chunk.cWidth) * Chunk.cWidth;
+        pos.y = (pos.y / Chunk.cHeight) * Chunk.cHeight;
+        pos.z = (pos.z / Chunk.cWidth) * Chunk.cWidth;
+
         Chunk tempChunk = null;
         wChunks.TryGetValue(pos, out tempChunk);
         return tempChunk;
     }
-    float num;
+
     public void AddChunk(Vector3i pos)
     {
-        num = Time.realtimeSinceStartup;
         Chunk tempChunk = GetChunk(pos);
         if(tempChunk == null)
             cToGenerate.Enqueue(pos);
@@ -195,7 +198,6 @@ public class World : MonoBehaviour
                 wChunks.Add(TempPos, tempChunkScript);
 
                 yield return Ninja.JumpToUnity;
-                Logger.Instance.Log(Time.realtimeSinceStartup - num);
             }
         }
         yield break;

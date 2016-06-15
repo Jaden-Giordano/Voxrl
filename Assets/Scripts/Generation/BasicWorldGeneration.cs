@@ -9,26 +9,40 @@ public class BasicWorldGeneration : GeneratorBase
     float caveFrequency = 0.025f;
     int caveSize = 40;
 
-    public override void GenerateColumn(int x, int z, Noise2D noise)
+    public override void GenerateColumn(int x, int z)
     {
+        float offsetX = chunk.cPosition.x / Chunk.cWidth;
+        float offsetZ = chunk.cPosition.z / Chunk.cWidth;
 
-        float[,] heightData = noise.GetNormalizedData();
+        int biome = 1;
+
+        Biomes.Instance.biomes[biome].noise2D.GeneratePlanar(
+            offsetX,
+            offsetX + 1,
+            offsetZ,
+            offsetZ + 1
+        );
+
+
+        float[,] heightData = Biomes.Instance.biomes[biome].noise2D.GetNormalizedData();
 
         int tx = x - chunk.cPosition.x, tz = z - chunk.cPosition.z;
 
-        int Height = (int)(heightData[tx, tz]*32);
+        int Height = Chunk.cHeight / 2;
+
+        Height += (int)(heightData[tx, tz]*Biomes.Instance.biomes[biome].noiseScale);
         
         for(int y = 0; y < Chunk.cHeight; y++)
         {
             Voxel tVox = new Voxel();
             if (y == Height)
             {
-                tVox.vColor = Color.green;
+                tVox.vColor = Biomes.Instance.biomes[biome].vTypes[0];
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
             }
             if(y < Height)
             {
-                tVox.vColor = Color.gray;
+                tVox.vColor = Biomes.Instance.biomes[biome].vTypes[1];
                 chunk.SetVoxel(new Vector3i(x, y, z), tVox);
             }
         }

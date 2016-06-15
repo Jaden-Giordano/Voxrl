@@ -94,6 +94,8 @@ public class Chunk : MonoBehaviour
     {
         if (pos.x < cPosition.x || pos.x >= cPosition.x + Chunk.cWidth)
             return false;
+        if (pos.y < cPosition.y || pos.y >= cPosition.y + Chunk.cHeight)
+            return false;
         if (pos.z < cPosition.z || pos.z >= cPosition.z + Chunk.cWidth)
             return false;
         return true;
@@ -112,7 +114,6 @@ public class Chunk : MonoBehaviour
             //tempColMesh = renderer.ToCollisionMesh(tempColMesh);
             cFilter.sharedMesh = tempMesh;
             //cColl.sharedMesh = tempColMesh;
-            Debug.Log("Render " + (Time.realtimeSinceStartup - time));
         }
     }
 
