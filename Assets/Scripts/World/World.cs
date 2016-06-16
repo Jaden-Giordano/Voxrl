@@ -107,11 +107,11 @@ public class World : MonoBehaviour
         return null;
     }
 
-    public void SetVoxel(Vector3i pos, Voxel vox)
+    public void SetVoxel(Vector3i pos, Voxel vox, bool replace)
     {
         Chunk tempChunk = GetChunk(pos);
         if (tempChunk != null)
-            tempChunk.SetVoxel(pos, vox);
+            tempChunk.SetVoxel(pos, vox, replace);
     }
 
     public void RemoveVoxel(Vector3i pos)

@@ -52,17 +52,20 @@ public class Chunk : MonoBehaviour
             //StartCoroutine(Render());
     }
 
-    public void SetVoxel(Vector3i pos, Voxel vox)
+    public void SetVoxel(Vector3i pos, Voxel vox, bool replace = false)
     {
         if (InRange(pos))
         {
             pos -= cPosition;
-            cVoxels[pos.x, pos.y, pos.z] = vox;
-            this.cDirty = true;
+            if (replace || cVoxels[pos.x, pos.y, pos.z] == null)
+            {
+                cVoxels[pos.x, pos.y, pos.z] = vox;
+                this.cDirty = true;
+            }
         }
         else
         {
-            world.SetVoxel(pos, vox);
+            world.SetVoxel(pos, vox, replace);
         }
     }
 

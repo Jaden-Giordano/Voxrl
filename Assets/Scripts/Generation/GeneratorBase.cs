@@ -1,5 +1,4 @@
-﻿
-public class GeneratorBase {
+﻿public class GeneratorBase {
 
 	public World world;
 	public Chunk chunk;    
