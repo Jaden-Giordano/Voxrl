@@ -19,6 +19,9 @@ public class Entity : MonoBehaviour {
     [HideInInspector]
     public PlayerController controller;
 
+    [SerializeField]
+    public Transform indicatorSpawn;
+
     [HideInInspector]
     public Stats baseStats;
 
@@ -39,9 +42,6 @@ public class Entity : MonoBehaviour {
         }
     }
 
-    [SerializeField]
-    public WeaponSettings testWeapon;
-
     [HideInInspector]
     public Inventory inventory;
 
@@ -50,19 +50,14 @@ public class Entity : MonoBehaviour {
         this.anim = GetComponentInChildren<Animator>();
         this.controller = GetComponent<PlayerController>();
 
+        if (this.indicatorSpawn == null)
+            this.indicatorSpawn = this.transform.FindChild("IndicatorSpawn");
+
         baseStats = new Stats();
 
         modifiedStats = new ModifiedStats();
 
         inventory = new Inventory(this);
-
-        if (this is Brute) {
-            // Placing Item in inventory and into hand
-            Club c = new Club(this, testWeapon);
-
-            inventory.AddItem(c);
-            inventory.AttachToSlot(c, Inventory.Slot.RightHand);
-        }
     }
 
     protected virtual void Update() {
@@ -96,14 +91,16 @@ public class Entity : MonoBehaviour {
     }
 
     public virtual void Affect(Effect[] effects) {
-        Debug.Log("Before" + this.baseStats.health);
         foreach (Effect i in effects) {
             if (i.statsBased) {
-                Debug.Log(this.FinalStats.damageReduce);
+                Debug.Log("Base: " + i.statsEffected.health);
                 float hm = i.statsEffected.health + this.FinalStats.damageReduce;
                 if (i.statsEffected.health <= 0)
                     hm = (hm > 0) ? 0 : hm;
                 this.baseStats.health += hm;
+                if (hm != 0 && (i.owner is Brute)) { // TODO brute should be player
+                    IndicatorManager.Instance.DisplayDamage((int) hm, this.indicatorSpawn);
+                }
                 this.baseStats.mana += i.statsEffected.mana;
                 //this.baseStats.speed += i.statsEffected.speed; TODO make speed maxSpeed and speed, so it can be modified
             }
@@ -114,7 +111,6 @@ public class Entity : MonoBehaviour {
                 this.battleSystem.InvokeStatus(i.status);
             }
         }
-        Debug.Log("After: " + this.baseStats.health);
     }
 
 }

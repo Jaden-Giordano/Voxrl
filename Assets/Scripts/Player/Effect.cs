@@ -12,6 +12,12 @@ public class StatsEffect {
         this.mana = m;
         this.speed = speed;
     }
+
+    public StatsEffect(StatsEffect c) {
+        this.health = c.health;
+        this.mana = c.mana;
+        this.speed = c.speed;
+    }
 }
 
 public abstract class Effect {
@@ -60,8 +66,27 @@ public abstract class Effect {
         this.owner = owner;
     }
 
+    public Effect(Effect c) {
+        this.owner = c.owner;
+        this.probability = c.probability;
+        this._statsBased = c.statsBased;
+        this._transformBased = c.transformBased;
+        this._invokesStatus = c.invokesStatus;
+        this._statsEffected = new StatsEffect(c.statsEffected);
+        this.force = c.force;
+        List<Status> s = new List<Status>();
+        foreach (Status i in c.status) {
+            s.Add(new Status(i));
+        }
+        this._status = s;
+    }
+
     public void ApplyEffect(Transform pT) {
         pT.GetComponent<Rigidbody>().AddForce(force);
+    }
+
+    public virtual Effect Copy() {
+        return null;
     }
 	
 }

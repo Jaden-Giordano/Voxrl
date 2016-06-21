@@ -19,4 +19,12 @@ public class DamageEffect : Effect {
         this._statsEffected = new StatsEffect(-damage, 0, 0);
     }
 
+    public DamageEffect(DamageEffect c) : base(c) {
+        this.damage = c.damage;
+    }
+
+    public override Effect Copy() {
+        return new DamageEffect(this);
+    }
+
 }

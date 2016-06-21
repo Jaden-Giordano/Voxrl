@@ -50,31 +50,10 @@ public abstract class Ability {
 
         foreach (Effect i in effects) {
             if (i.probability >= p)
-                gen.Add(i);
+                gen.Add(i.Copy());
         }
 
         return gen.ToArray();
-    }
-
-    public GameObject[] GetEffectedObjects(Transform b) { // TODO not here
-        List<GameObject> ef = new List<GameObject>();
-        Debug.Log("AOE: " + aoe.x * aoe.y * aoe.z);
-        for (int x = -aoe.x/2; x < aoe.x/2; x++) {
-            for (int y = -aoe.y / 2; y < aoe.y / 2; y++) {
-                for (int z = -aoe.z / 2; z < aoe.z / 2; z++) {
-                    Quaternion angle = Quaternion.Euler(new Vector3(x, y, z));
-                    Ray r = new Ray(b.position, angle * b.forward);
-                    RaycastHit[] h = Physics.RaycastAll(r, range);
-                    Logger.Instance.Log(h.Length);
-                    foreach (RaycastHit i in h) {
-                        if (i.transform != b)
-                            if (i.transform.tag != "World" && i.transform.GetComponentInParent<Entity>() != null)
-                                ef.Add(i.transform.gameObject);
-                    }
-                }
-            }
-        }
-        return ef.ToArray();
     }
 
     public void Update() {

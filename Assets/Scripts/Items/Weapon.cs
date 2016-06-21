@@ -49,9 +49,6 @@ public class Weapon : ModifiedStatsItem {
         aW.transform.localPosition = localPos;
         aW.transform.localScale = new Vector3(1, 1, 1);
         aW.transform.rotation = Quaternion.identity;
-
-        Debug.Log(parent.position);
-        Debug.Log(aW.transform.localPosition);
     }
 
     public Ability[] GetAbilities() {

@@ -9,4 +9,12 @@ public class StunEffect : Effect {
         this._status.Add(new Status(StatusType.Stunned, 1, 2f));
     }
 
+    public StunEffect(StunEffect c) : base(c) {
+
+    }
+
+    public override Effect Copy() {
+        return new StunEffect(this);
+    }
+
 }

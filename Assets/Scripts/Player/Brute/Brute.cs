@@ -3,10 +3,19 @@ using System.Collections;
 
 public class Brute : Entity {
 
-	protected override void Start() {
+    [SerializeField]
+    public WeaponSettings testWeapon;
+
+    protected override void Start() {
         base.Start();
 
         this.baseStats = this.gameObject.AddComponent<BruteStats>();
+
+        // Placing Item in inventory and into hand
+        Club c = new Club(this, testWeapon);
+
+        inventory.AddItem(c);
+        inventory.AttachToSlot(c, Inventory.Slot.RightHand);
     }
 
     protected override void Update() {

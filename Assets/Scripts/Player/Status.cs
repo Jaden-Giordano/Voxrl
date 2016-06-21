@@ -27,4 +27,10 @@ public class Status {
         this.timeLeft = time;
     }
 
+    public Status(Status c) {
+        this.type = c.type;
+        this.percentage = c.percentage;
+        this.timeLeft = c.timeLeft;
+    }
+
 }
