@@ -14,6 +14,7 @@ public enum Rarity {
 [System.Serializable]
 public class Item {
 
+    [HideInInspector]
     public Entity owner;
 
     public string name = "Item";

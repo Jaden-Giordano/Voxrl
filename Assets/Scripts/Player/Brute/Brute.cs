@@ -6,7 +6,7 @@ public class Brute : Entity {
 	protected override void Start() {
         base.Start();
 
-        this.baseStats = new BruteStats();
+        this.baseStats = this.gameObject.AddComponent<BruteStats>();
     }
 
     protected override void Update() {

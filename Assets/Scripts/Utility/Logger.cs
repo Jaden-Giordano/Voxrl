@@ -184,7 +184,6 @@ public class Logger : MonoBehaviour {
                 Vector3 rarr = Quaternion.Euler(45+90, 0, 0) * (i.ray.direction * 0.1f);
                 Debug.DrawLine(i.ray.origin + i.ray.direction, i.ray.origin + i.ray.direction + larr);
                 Debug.DrawLine(i.ray.origin + i.ray.direction, i.ray.origin + i.ray.direction + rarr);
-                yield return null;
             }
 
             yield return null;

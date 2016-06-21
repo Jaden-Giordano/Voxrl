@@ -7,6 +7,8 @@ public class BattleSystem : MonoBehaviour {
 
     public Entity owner;
 
+    protected Effect[] currentEffects;
+
     protected virtual void Start() {
         owner = GetComponent<Entity>();
     }
@@ -24,33 +26,24 @@ public class BattleSystem : MonoBehaviour {
     }
 
     public virtual void UseAbility(int index) {
-        Ability a = owner.testWeapon.GetAbilities()[index];
+        Ability a = owner.inventory.RightHand.GetAbilities()[index];
         if (a != null) {
             if (a.available) {
                 Logger.Instance.Log("Used Ability " + index);
-                Effect[] efs = owner.ApplyModifiedStats(a.GenerateEffects());
+                currentEffects = owner.ApplyModifiedStats(a.GenerateEffects());
                 if (index == 0)
                     owner.Animate(index);
 
                 if (a.selfAfflict)
-                    this.Effected(efs);
-                else {
-                    GameObject[] hits = a.GetEffectedObjects(this.transform);
-                    foreach (GameObject i in hits) {
-                        if (i.tag == "Mob") {
-                            BattleSystem mob = i.GetComponent<BattleSystem>();
-                            mob.Effected(efs);
-                        }
-                    }
-                }
+                    this.Affect(currentEffects);
                 
                 a.Reset();
             }
         }
     }
 
-    public virtual void Effected(Effect[] effects) {
-        this.owner.Effected(effects);
+    public virtual void Affect(Effect[] effects) {
+        this.owner.Affect(effects);
     }
 
     public virtual void InvokeStatus(Status s) {
@@ -68,6 +61,14 @@ public class BattleSystem : MonoBehaviour {
 
     public virtual void AwardKill(int exp) {
         this.owner.baseStats.GiveExp(exp);
+    }
+
+    public virtual void Hit(Entity e) {
+        if (owner.anim.GetBool("Attacking"))
+            if (currentEffects != null)
+                if (currentEffects.Length > 0) {
+                    e.battleSystem.Affect(currentEffects);
+                }
     }
 
 }

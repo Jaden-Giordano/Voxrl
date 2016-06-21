@@ -26,9 +26,21 @@ public class Weapon : ModifiedStatsItem {
         localPos = Vector3.zero;
     }
 
+    public Weapon(Entity owner, WeaponSettings s) : base(owner) {
+        this.name = s.name;
+        this.rarity = s.rarity;
+        this.prefab = s.prefab;
+        this.damage = s.damage;
+        this.animType = s.animType;
+
+        localPos = Vector3.zero;
+    }
+
     public void Update() {
-        main.Update();
-        special.Update();
+        if (main != null)
+            main.Update();
+        if (special != null)
+            special.Update();
     }
 
     public void Attach(Transform parent) {
@@ -37,6 +49,9 @@ public class Weapon : ModifiedStatsItem {
         aW.transform.localPosition = localPos;
         aW.transform.localScale = new Vector3(1, 1, 1);
         aW.transform.rotation = Quaternion.identity;
+
+        Debug.Log(parent.position);
+        Debug.Log(aW.transform.localPosition);
     }
 
     public Ability[] GetAbilities() {

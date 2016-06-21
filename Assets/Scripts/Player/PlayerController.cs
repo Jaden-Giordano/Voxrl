@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour {
         RaycastHit[] hits = Physics.RaycastAll(r, dist);
         if (hits.Length > 0) {
             foreach (RaycastHit i in hits) {
-                if (i.transform != this.transform) {
+                if (i.transform != this.transform || i.transform.IsChildOf(this.transform)) {
                     if (i.distance < closestDist)
                         closestDist = i.distance;
                 }

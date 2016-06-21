@@ -39,7 +39,8 @@ public class Stats : MonoBehaviour {
         Intelligence,
         Agility,
         Charisma,
-        Luck
+        Luck,
+        Resistance
     }
 
     public float Strength = 1;
@@ -49,6 +50,7 @@ public class Stats : MonoBehaviour {
     public float Agility = 1;
     public float Charisma = 1;
     public float Luck = 1;
+    public float Resistance = 1;
 
     public float health = 100;
     public float maxHealth {
@@ -85,8 +87,8 @@ public class Stats : MonoBehaviour {
     private int lastLevel = 0;
 
 	protected virtual void Start () {
-        this.health = maxHealth;
-        this.mana = maxMana;
+        UpdateHealth();
+        UpdateMana();
 	}
 
 	protected virtual void FixedUpdate () {
@@ -125,6 +127,7 @@ public class Stats : MonoBehaviour {
                     break;
                 case SkillType.Intelligence:
                     this.Intelligence += amt;
+                    UpdateMana();
                     break;
                 case SkillType.Luck:
                     this.Luck += amt;
@@ -134,9 +137,21 @@ public class Stats : MonoBehaviour {
                     break;
                 case SkillType.Vitality:
                     this.Vitality += amt;
+                    UpdateHealth();
+                    break;
+                case SkillType.Resistance:
+                    this.Resistance += amt;
                     break;
             }
         }
+    }
+
+    public void UpdateHealth() {
+        this.health = maxHealth;
+    }
+
+    public void UpdateMana() {
+        this.mana = maxMana;
     }
 
 }

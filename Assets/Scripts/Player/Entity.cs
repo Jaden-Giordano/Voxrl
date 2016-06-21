@@ -1,14 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
+public class WeaponSettings {
+    public string name = "";
+    public Rarity rarity = Rarity.Normal;
+    public GameObject prefab;
+    public float damage = 0;
+    public AnimationType animType = AnimationType.Swing;
+}
+
 public class Entity : MonoBehaviour {
 
+    [HideInInspector]
     public BattleSystem battleSystem;
-    Animator anim;
-    PlayerController controller;
+    [HideInInspector]
+    public Animator anim;
+    [HideInInspector]
+    public PlayerController controller;
 
+    [HideInInspector]
     public Stats baseStats;
 
+    [HideInInspector]
     public ModifiedStats modifiedStats;
 
     public ModifiedStats FinalStats {
@@ -26,8 +40,9 @@ public class Entity : MonoBehaviour {
     }
 
     [SerializeField]
-    public Club testWeapon;
+    public WeaponSettings testWeapon;
 
+    [HideInInspector]
     public Inventory inventory;
 
 	protected virtual void Start() {
@@ -39,19 +54,25 @@ public class Entity : MonoBehaviour {
 
         modifiedStats = new ModifiedStats();
 
-        testWeapon.Attach(controller.player.FindChild("Armature").FindChild("Hand.R").FindChild("Hand.R_end")); // TODO make more modular
+        inventory = new Inventory(this);
 
-        inventory = new Inventory();
+        if (this is Brute) {
+            // Placing Item in inventory and into hand
+            Club c = new Club(this, testWeapon);
+
+            inventory.AddItem(c);
+            inventory.AttachToSlot(c, Inventory.Slot.RightHand);
+        }
     }
 
     protected virtual void Update() {
-
+        inventory.Update();
     }
 
     public virtual void Animate(int index) {
-        switch (testWeapon.animType) {
+        switch (inventory.RightHand.animType) {
             case AnimationType.Bash:
-                anim.Play("BashAttack0" + index);
+                anim.SetBool("Attacking", true);
                 break;
         }
     }
@@ -74,11 +95,13 @@ public class Entity : MonoBehaviour {
         return effects;
     }
 
-    public virtual void Effected(Effect[] effects) {
+    public virtual void Affect(Effect[] effects) {
+        Debug.Log("Before" + this.baseStats.health);
         foreach (Effect i in effects) {
             if (i.statsBased) {
+                Debug.Log(this.FinalStats.damageReduce);
                 float hm = i.statsEffected.health + this.FinalStats.damageReduce;
-                if (i.statsEffected.health < 0)
+                if (i.statsEffected.health <= 0)
                     hm = (hm > 0) ? 0 : hm;
                 this.baseStats.health += hm;
                 this.baseStats.mana += i.statsEffected.mana;
@@ -91,6 +114,7 @@ public class Entity : MonoBehaviour {
                 this.battleSystem.InvokeStatus(i.status);
             }
         }
+        Debug.Log("After: " + this.baseStats.health);
     }
 
 }
