@@ -9,4 +9,10 @@ public class Scarecrow : Entity {
         this.baseStats = this.gameObject.AddComponent<ScarecrowStats>();
     }
 
+    protected override void Update() {
+        base.Update();
+
+        Debug.Log("Scarecrow: " + this.baseStats.Vitality + " : " + this.baseStats.maxHealth);
+    }
+
 }

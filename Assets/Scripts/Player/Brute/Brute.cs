@@ -24,6 +24,8 @@ public class Brute : Entity {
         if (Input.GetMouseButton(0)) {
             this.battleSystem.UseAbility(0);
         }
+
+        Debug.Log("Brute: "+this.baseStats.Vitality+" : "+this.baseStats.maxHealth);
     }
 
 }

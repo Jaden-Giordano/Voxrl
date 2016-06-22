@@ -4,8 +4,8 @@ using System.Collections;
 public class ScarecrowStats : Stats {
 
     protected override void Start() {
+        this.Vitality = 999;
         base.Start();
-        this.SpendSkillPoints(SkillType.Vitality, 999);
         Debug.Log("MaxHP: "+maxHealth);
     }
 

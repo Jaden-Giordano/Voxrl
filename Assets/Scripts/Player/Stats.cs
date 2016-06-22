@@ -52,9 +52,12 @@ public class Stats : MonoBehaviour {
     public float Luck = 1;
     public float Resistance = 1;
 
+    public float mulOne = 1.02f;
+    public float mulTwo = 14.78f;
+
     public float health = 100;
     public float maxHealth {
-        get { return (100*(Mathf.Pow(1.1f, Level)))*(1+(Vitality/40)); }
+        get { return (100 * (Mathf.Pow(mulOne, Level))) * (1 + (Vitality / mulTwo)); }
     }
 
     public float mana = 40;
@@ -137,6 +140,7 @@ public class Stats : MonoBehaviour {
                     break;
                 case SkillType.Vitality:
                     this.Vitality += amt;
+                    Debug.Log("HI");
                     UpdateHealth();
                     break;
                 case SkillType.Resistance:
